@@ -8,10 +8,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.peakform.Navigation.Screens
+import com.example.peakform.R
+import com.example.peakform.ui.components.CardImage
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
 
 @Composable
@@ -24,27 +30,28 @@ fun Home(navController: NavController) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(200.dp)
-                        .padding(horizontal = 15.dp, vertical = 10.dp)
-                        .clip(MaterialTheme.shapes.large)
-                ) {
-//                    Image(
-//                        painter = painterResource(R.drawable.images),
-//                        contentDescription = "home_screen_bg",
-//                        contentScale = ContentScale.Crop,
-//                        modifier = Modifier.fillMaxSize()
-//                    )
-                }
-                Text(
-                    "Home Screen",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(vertical = 20.dp)
+                CardImage(
+                    backgroundRes = R.drawable.cardlist,
+                    title = "LIST \nEXERCISE",
+                    titleColor = Color.White,
+                    onClick = {}
+                )
+
+                CardImage(
+                    backgroundRes = R.drawable.cardgoal,
+                    title = "SET \nYOUR GOAL",
+                    titleColor = Color.White,
+                    onClick = { navController.navigate(Screens.MakeSchedule.route)}
                 )
             }
         }
     }
+}
+
+@Composable
+@Preview
+fun Preview(){
+    Home(navController = rememberNavController())
 }
