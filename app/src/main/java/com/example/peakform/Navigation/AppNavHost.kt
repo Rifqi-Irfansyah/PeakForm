@@ -23,7 +23,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             Profile(navController)
         }
         composable(Screens.MakeSchedule.route) {
-            MakeSchedule()
+            MakeSchedule(navController)
         }
     }
 }
