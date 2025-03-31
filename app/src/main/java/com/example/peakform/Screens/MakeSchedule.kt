@@ -132,7 +132,7 @@ fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewM
                             ) {
                                     optionImages[option]?.let { imageRes ->
                                     Image(
-                                        painter = painterResource(id = imageRes), // Ganti dengan ID gambar yang sesuai
+                                        painter = painterResource(id = imageRes),
                                         contentDescription = null,
                                         modifier = Modifier
                                             .width(150.dp)
@@ -161,73 +161,19 @@ fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewM
 fun Popup(navController: NavController, isSuccess: Boolean, isError: String, isLoading:Boolean){
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
-            delay(2500)
+            delay(2000)
+            navController.navigate(Screens.Home.route) {
+                launchSingleTop = true
+            }
+        }
+        if (isError != "") {
+            delay(3000)
             navController.navigate(Screens.Home.route) {
                 launchSingleTop = true
             }
         }
     }
-    if (isLoading) {
-        AlertDialog(
-            onDismissRequest = { },
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    LottieAnimation(
-                        modifier = Modifier.size(200.dp),
-                        composition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading)).value,
-                        iterations = LottieConstants.IterateForever
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Please wait...", fontSize = 18.sp, color = Color.Black)
-                }
-            },
-            confirmButton = { }
-        )
-    }
-    if (isSuccess) {
-        AlertDialog(
-            onDismissRequest = { },
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    LottieAnimation(
-                        modifier = Modifier.size(200.dp),
-                        composition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.success)).value,
-                        iterations = LottieConstants.IterateForever
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Success created schedule", fontSize = 18.sp, color = Color.Black)
-                }
-            },
-            confirmButton = { }
-        )
-    }
-
-    if (isError != "") {
-        AlertDialog(
-            onDismissRequest = { },
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    LottieAnimation(
-                        modifier = Modifier.size(200.dp),
-                        composition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.error)).value,
-                        iterations = LottieConstants.IterateForever
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Error\n $isError", fontSize = 18.sp, color = Color.Black)
-                }
-            },
-            confirmButton = { }
-        )
-    }
+    PopupState(isLoading, isSuccess, isError, "create schedule")
 }
 
 @Composable

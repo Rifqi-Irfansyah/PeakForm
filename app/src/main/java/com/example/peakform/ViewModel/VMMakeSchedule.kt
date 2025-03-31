@@ -11,8 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class VMMakeSchedule : ViewModel() {
-    private val _response = MutableLiveData<String>()
-    val response: LiveData<String> get() = _response
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
@@ -24,6 +22,7 @@ class VMMakeSchedule : ViewModel() {
 
     fun submitAnswers(answers: Map<Int, String>) {
         viewModelScope.launch {
+            _loading.value = true
             try {
                 val requestBody = mutableMapOf<String, Any>()
 
@@ -44,14 +43,11 @@ class VMMakeSchedule : ViewModel() {
                     requestBody["repetition"] = 8
                 }
 
-                Log.d("RequestBody", "Modified Request type: $requestBody")
-
                 requestBody["id_user"] = "115dd593-1f58-454f-bd25-318cfd2b4819"
                 requestBody["id_exercise"] = 1
                 requestBody["day"] = 4
 
                 val apiResponse = ApiService.instance.createSchedule(requestBody)
-
                 if (apiResponse.isSuccessful) {
                     val responseString = apiResponse.body()?.string()
                     Log.d("API Response", "Success: $responseString")
