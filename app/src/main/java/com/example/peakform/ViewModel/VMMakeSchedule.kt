@@ -6,11 +6,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peakform.API.ApiService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class VMMakeSchedule : ViewModel() {
     private val _response = MutableLiveData<String>()
     val response: LiveData<String> get() = _response
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
+
+    private val _success = MutableStateFlow(false)
+    val success: StateFlow<Boolean> = _success
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
 
     fun submitAnswers(answers: Map<Int, String>) {
         viewModelScope.launch {
@@ -45,14 +55,17 @@ class VMMakeSchedule : ViewModel() {
                 if (apiResponse.isSuccessful) {
                     val responseString = apiResponse.body()?.string()
                     Log.d("API Response", "Success: $responseString")
+                    _success.value = true
                 } else {
-                    Log.e("API Response", "Error: ${apiResponse.errorBody()?.string()}")
+                    val errorMessage = apiResponse.errorBody()?.string() ?: "Unknown error"
+                    Log.e("API Response", "Error: $errorMessage")
+                    _error.value = errorMessage
                 }
-
-                _response.postValue("Success: $apiResponse")
             } catch (e: Exception) {
                 Log.e("Error ethernet", "${e.message}")
-                _response.postValue("Error: ${e.message}")
+                _error.value = e.message
+            } finally {
+                _loading.value = false
             }
         }
     }

@@ -15,7 +15,7 @@ interface ApiService {
     companion object {
         val instance: ApiService by lazy {
             Retrofit.Builder()
-                .baseUrl("http://" + "192.168.4.198" + ":3000/")
+                .baseUrl("http://" + "192.168.223.198" + ":3000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(ApiService::class.java)
