@@ -1,4 +1,4 @@
-package com.example.peakform.ViewModel
+package com.example.peakform.ViewModel.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +13,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Response
 
-class VMAuth : ViewModel() {
+class VMLogin : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 

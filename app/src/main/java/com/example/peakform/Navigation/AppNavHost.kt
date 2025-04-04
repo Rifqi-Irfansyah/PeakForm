@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.peakform.Screens.Auth
+import com.example.peakform.Screens.auth.Login
 import com.example.peakform.Screens.Home
 import com.example.peakform.Screens.MakeSchedule
 import com.example.peakform.Screens.Profile
@@ -18,7 +18,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         modifier = modifier
     ) {
         composable(Screens.Auth.route) {
-            Auth(navController)
+            Login(navController)
         }
         composable(Screens.Home.route) {
             Home(navController)

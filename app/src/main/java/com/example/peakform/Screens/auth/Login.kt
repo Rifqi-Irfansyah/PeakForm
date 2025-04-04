@@ -1,4 +1,4 @@
-package com.example.peakform.Screens
+package com.example.peakform.Screens.auth
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.peakform.Navigation.Screens
-import com.example.peakform.ViewModel.VMAuth
+import com.example.peakform.ViewModel.auth.VMLogin
 import com.example.peakform.data.model.PopupStatus
 import com.example.peakform.ui.components.Popup
 import kotlinx.coroutines.delay
@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Auth(navController: NavController, viewModel: VMAuth = viewModel()) {
+fun Login(navController: NavController, viewModel: VMLogin = viewModel()) {
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     val loading by viewModel.loading.collectAsState()
