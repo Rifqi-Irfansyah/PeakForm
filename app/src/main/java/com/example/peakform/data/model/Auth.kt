@@ -12,12 +12,22 @@ data class AuthResponse(
 )
 
 data class RegisterRequest(
-    val name: String,
     val email: String,
-    val password: String
 )
 
 data class RegisterResponse(
+    val message: String,
+    val status: String,
+)
+
+data class VerifyRegisterRequest(
+    val email: String,
+    val otp: String,
+    val name: String,
+    val password: String
+)
+
+data class VerifyRegisterResponse(
     val message: String,
     val status: String,
 )
