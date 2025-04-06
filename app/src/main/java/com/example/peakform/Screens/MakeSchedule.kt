@@ -1,24 +1,18 @@
 package com.example.peakform.Screens
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,13 +41,6 @@ import com.example.peakform.R
 import com.example.peakform.ViewModel.VMMakeSchedule
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import kotlinx.coroutines.delay
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.unit.*
-import com.airbnb.lottie.compose.*
-
 
 @Composable
 fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewModel()){
@@ -117,7 +104,7 @@ fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewM
                                     if (currentQuestionIndex < questions.lastIndex) {
                                         currentQuestionIndex++
                                     } else {
-                                        viewModel.submitAnswers(selectedAnswers)
+                                        viewModel.makeSchedule(selectedAnswers)
                                     }
                                 },
                             colors = CardDefaults.cardColors(containerColor = Color.LightGray),
@@ -163,12 +150,14 @@ fun Popup(navController: NavController, isSuccess: Boolean, isError: String, isL
         if (isSuccess) {
             delay(2000)
             navController.navigate(Screens.Home.route) {
+                popUpTo(Screens.Home.route) { inclusive = true }
                 launchSingleTop = true
             }
         }
         if (isError != "") {
             delay(3000)
             navController.navigate(Screens.Home.route) {
+                popUpTo(Screens.Home.route) { inclusive = true }
                 launchSingleTop = true
             }
         }

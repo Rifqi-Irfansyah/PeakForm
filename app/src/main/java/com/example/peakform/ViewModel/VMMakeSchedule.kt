@@ -20,42 +20,72 @@ class VMMakeSchedule : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    fun submitAnswers(answers: Map<Int, String>) {
+
+    fun makeSchedule(answers: Map<Int, String>) {
+        val idExerciseType = mutableMapOf<String, Any>()
+        idExerciseType["ChestBeginner"] = 1
+        idExerciseType["ChestIntermediate"] = 2
+
         viewModelScope.launch {
             _loading.value = true
             try {
+                val idExercises : List<Int>
+                val idExerciseStrength1 = listOf(1, 2, 3, 4)
+                val idExerciseStrength2 = listOf(1, 2, 3, 4)
+                val idExerciseStrength3 = listOf(1, 2, 3, 4)
+                val idExercisesCardio1 = listOf(1, 2, 3, 4)
+                val idExercisesCardio2 = listOf(1, 2, 3, 4)
+                val idExercisesCardio3 = listOf(1, 2, 3, 4)
                 val requestBody = mutableMapOf<String, Any>()
-
-                if(answers[0] == "Build Muscle"){
-                    requestBody["type"] = "strength"
-                }
-                else
-                    requestBody["type"] = "cardio"
-
-                if (answers[1] == "3-7 times") {
-                    requestBody["set"] = 4
-                    requestBody["repetition"] = 12
-                } else if (answers[1] == "1-2 times"){
-                    requestBody["set"] = 4
-                    requestBody["repetition"] = 8
-                } else{
-                    requestBody["set"] = 3
-                    requestBody["repetition"] = 8
-                }
-
-                requestBody["id_user"] = "115dd593-1f58-454f-bd25-318cfd2b4819"
+                requestBody["id_user"] = "115dd593-1f58-454f-bd25-318cfd2b4810"
                 requestBody["id_exercise"] = 1
                 requestBody["day"] = 4
 
-                val apiResponse = ApiService.instance.createSchedule(requestBody)
-                if (apiResponse.isSuccessful) {
-                    val responseString = apiResponse.body()?.string()
-                    Log.d("API Response", "Success: $responseString")
-                    _success.value = true
-                } else {
-                    val errorMessage = apiResponse.errorBody()?.string() ?: "Unknown error"
-                    Log.e("API Response", "Error: $errorMessage")
-                    _error.value = errorMessage
+                if(answers[0] == "Build Muscle"){
+                    requestBody["type"] = "strength"
+                    if (answers[1] == "3-7 times") {
+                        requestBody["set"] = 4
+                        requestBody["repetition"] = 12
+                        idExercises = idExerciseStrength1
+                    } else if (answers[1] == "1-2 times"){
+                        requestBody["set"] = 4
+                        requestBody["repetition"] = 8
+                        idExercises = idExerciseStrength2
+                    } else{
+                        requestBody["set"] = 3
+                        requestBody["repetition"] = 8
+                        idExercises = idExerciseStrength3
+                    }
+                }
+                else{
+                    requestBody["type"] = "cardio"
+                    if (answers[1] == "3-7 times") {
+                        requestBody["set"] = 4
+                        requestBody["repetition"] = 12
+                        idExercises = idExercisesCardio1
+                    } else if (answers[1] == "1-2 times"){
+                        requestBody["set"] = 4
+                        requestBody["repetition"] = 8
+                        idExercises = idExercisesCardio2
+                    } else{
+                        requestBody["set"] = 3
+                        requestBody["repetition"] = 8
+                        idExercises = idExercisesCardio3
+                    }
+                }
+
+                for (exerciseId in idExercises) {
+                    requestBody["id_exercise"] = exerciseId
+
+                    val apiResponse = ApiService.instance.createSchedule(requestBody)
+
+                    if (apiResponse.isSuccessful) {
+                        val responseString = apiResponse.body()?.string()
+                        Log.d("API Response", "Success for exercise $exerciseId: $responseString")
+                    } else {
+                        val errorMessage = apiResponse.errorBody()?.string() ?: "Unknown error"
+                        Log.e("API Response", "Error for exercise $exerciseId: $errorMessage")
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("Error ethernet", "${e.message}")
