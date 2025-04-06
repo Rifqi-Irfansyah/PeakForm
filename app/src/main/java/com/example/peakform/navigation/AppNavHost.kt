@@ -1,4 +1,4 @@
-package com.example.peakform.Navigation
+package com.example.peakform.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -12,17 +12,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.peakform.Screens.auth.Login
-import com.example.peakform.Screens.Home
-import com.example.peakform.Screens.MakeSchedule
-import com.example.peakform.Screens.Profile
-import com.example.peakform.Screens.auth.register.Register
-import com.example.peakform.Screens.auth.register.VerifyRegister
+import com.example.peakform.screens.Home
+import com.example.peakform.screens.MakeSchedule
+import com.example.peakform.screens.Profile
+import com.example.peakform.screens.auth.Login
+import com.example.peakform.screens.auth.register.Register
+import com.example.peakform.screens.auth.register.VerifyRegister
+import com.example.peakform.viewmodel.VMUser
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
+fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, VMUser: VMUser) {
     AnimatedNavHost(
         navController = navController,
         startDestination = Screens.Auth.route,
@@ -34,7 +35,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
     ) {
         composable(Screens.Auth.route) {
-            Login(navController)
+            Login(navController, userViewModel = VMUser)
         }
         composable(Screens.Register.route) {
             Register(navController)
@@ -50,10 +51,11 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             Home(navController)
         }
         composable(Screens.Profile.route) {
-            Profile(navController)
+            Profile(navController, userViewModel = VMUser)
         }
         composable(Screens.MakeSchedule.route) {
             MakeSchedule(navController)
         }
     }
 }
+

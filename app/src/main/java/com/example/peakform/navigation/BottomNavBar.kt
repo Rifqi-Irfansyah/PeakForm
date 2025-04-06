@@ -1,4 +1,4 @@
-package com.example.peakform.Navigation
+package com.example.peakform.navigation
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*

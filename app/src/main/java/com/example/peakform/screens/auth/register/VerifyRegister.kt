@@ -1,4 +1,4 @@
-package com.example.peakform.Screens.auth.register
+package com.example.peakform.screens.auth.register
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -12,33 +12,35 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.peakform.Navigation.Screens
-import com.example.peakform.ViewModel.auth.VMRegister
+import androidx.navigation.NavController
+import com.example.peakform.navigation.Screens
+import com.example.peakform.viewmodel.auth.VMRegister
 import com.example.peakform.data.model.PopupStatus
 import com.example.peakform.ui.components.Popup
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Register(navController: NavController, viewModel: VMRegister = viewModel()) {
-    val emailState = remember { mutableStateOf("") }
+fun VerifyRegister(navController: NavController, viewModel: VMRegister = viewModel(), email: String) {
+    val otpState = rememberSaveable { mutableStateOf("") }
+    val usernameState = rememberSaveable { mutableStateOf("") }
+    val passwordState = rememberSaveable { mutableStateOf("") }
+    val emailState = rememberSaveable { mutableStateOf(email) }
     val loading by viewModel.loading.collectAsState()
     val success by viewModel.success.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -60,13 +62,13 @@ fun Register(navController: NavController, viewModel: VMRegister = viewModel()) 
         if (success) {
             Popup(
                 status = PopupStatus.Success,
-                popupMessage = "Verification email sent!"
+                popupMessage = "Registration successful!"
             )
 
             coroutineScope.launch {
                 delay(2000L)
-                navController.navigate(Screens.VerifyRegister.passEmail(emailState.value)) {
-                    popUpTo(Screens.Auth.route) { inclusive = true }
+                navController.navigate(Screens.Auth.route) {
+                    popUpTo(Screens.Register.route) {inclusive = true}
                 }
             }
         }
@@ -80,20 +82,19 @@ fun Register(navController: NavController, viewModel: VMRegister = viewModel()) 
                 delay(3000L)
                 viewModel.resetState()
             }
-
         }
 
         Text(
-            text = "Join PeakForm Today!",
+            text = "Complete Your Registration",
             style = TextStyle(
                 color = MaterialTheme.colorScheme.primary,
-                fontSize = 35.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier.padding(bottom = 16.dp)
         )
         Text(
-            text = "Sign up with your email to get started",
+            text = "Enter the OTP sent to your emai and set up",
             style = TextStyle(
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp
@@ -101,7 +102,7 @@ fun Register(navController: NavController, viewModel: VMRegister = viewModel()) 
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            text = "on your exercise journey",
+            text = "your account details to get started!",
             style = TextStyle(
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp
@@ -109,30 +110,40 @@ fun Register(navController: NavController, viewModel: VMRegister = viewModel()) 
             modifier = Modifier.padding(bottom = 32.dp)
         )
         OutlinedTextField(
-            value = emailState.value,
-            onValueChange = { emailState.value = it },
-            label = { Text("Email") },
+            value = otpState.value,
+            onValueChange = { otpState.value = it },
+            label = { Text("OTP") },
+            shape = MaterialTheme.shapes.large,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = usernameState.value,
+            onValueChange = { usernameState.value = it },
+            label = { Text("Username") },
+            shape = MaterialTheme.shapes.large,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = passwordState.value,
+            onValueChange = { passwordState.value = it },
+            label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation(),
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { viewModel.sendVerificationEmail(emailState.value) },
+            onClick = { viewModel.verifyRegister(emailState.value, otpState.value, usernameState.value, passwordState.value) },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
             enabled = !loading
         ) {
             Text(
-                "Verify Email",
+                "Complete Registration",
                 color = MaterialTheme.colorScheme.onPrimary,
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        TextButton(
-            onClick = { navController.navigate(Screens.Auth.route) }
-        ) {
-            Text("Already have an account? Login")
-        }
     }
 }
-

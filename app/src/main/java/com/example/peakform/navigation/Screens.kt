@@ -1,4 +1,4 @@
-package com.example.peakform.Navigation
+package com.example.peakform.navigation
 
 sealed class Screens(val route : String) {
     object Home : Screens("home_screen")

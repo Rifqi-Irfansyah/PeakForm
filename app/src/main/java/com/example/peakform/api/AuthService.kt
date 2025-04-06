@@ -1,4 +1,4 @@
-package com.example.peakform.API
+package com.example.peakform.api
 
 import com.example.peakform.data.model.AuthRequest
 import com.example.peakform.data.model.AuthResponse
@@ -6,6 +6,7 @@ import com.example.peakform.data.model.RegisterRequest
 import com.example.peakform.data.model.RegisterResponse
 import com.example.peakform.data.model.VerifyRegisterRequest
 import com.example.peakform.data.model.VerifyRegisterResponse
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Response
@@ -26,7 +27,7 @@ interface AuthService {
     companion object {
         val instance: AuthService by lazy {
             Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(BASE_URL.toHttpUrlOrNull()!!)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(AuthService::class.java)

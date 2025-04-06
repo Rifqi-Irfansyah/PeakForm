@@ -1,6 +1,7 @@
-package com.example.peakform.Screens.auth
+package com.example.peakform.screens.auth
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,23 +29,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.peakform.Navigation.Screens
-import com.example.peakform.ViewModel.auth.VMLogin
+import com.example.peakform.navigation.Screens
+import com.example.peakform.viewmodel.auth.VMLogin
 import com.example.peakform.data.model.PopupStatus
 import com.example.peakform.ui.components.Popup
+import com.example.peakform.viewmodel.VMUser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Login(navController: NavController, viewModel: VMLogin = viewModel()) {
+fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), userViewModel: VMUser = viewModel()) {
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
-    val loading by viewModel.loading.collectAsState()
-    val success by viewModel.success.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val user by viewModel.user.collectAsState()
+    val loading by loginViewModel.loading.collectAsState()
+    val success by loginViewModel.success.collectAsState()
+    val error by loginViewModel.error.collectAsState()
+    val user by loginViewModel.user.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -61,6 +63,8 @@ fun Login(navController: NavController, viewModel: VMLogin = viewModel()) {
             )
         }
         if (success) {
+            Log.d("Login", "Login successful: $user")
+            user?.let { userViewModel.updateUser(it) }
             Popup(
                 status = PopupStatus.Success,
                 popupMessage = "Login successful!"
@@ -81,7 +85,7 @@ fun Login(navController: NavController, viewModel: VMLogin = viewModel()) {
 
             coroutineScope.launch {
                 delay(3000L)
-                viewModel.resetState()
+                loginViewModel.resetState()
             }
 
         }
@@ -121,7 +125,7 @@ fun Login(navController: NavController, viewModel: VMLogin = viewModel()) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { viewModel.login(emailState.value, passwordState.value) },
+            onClick = { loginViewModel.login(emailState.value, passwordState.value) },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
             enabled = !loading

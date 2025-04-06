@@ -1,5 +1,6 @@
-package com.example.peakform.API
+package com.example.peakform.api
 
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Response
@@ -20,7 +21,7 @@ interface ApiService {
     companion object {
         val instance: ApiService by lazy {
             Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(BASE_URL.toHttpUrlOrNull()!!)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(ApiService::class.java)

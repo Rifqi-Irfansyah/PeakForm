@@ -1,16 +1,12 @@
-package com.example.peakform.ViewModel
+package com.example.peakform.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.peakform.API.ApiService
+import com.example.peakform.api.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okhttp3.RequestBody
-import okhttp3.Response
 
 class VMMakeSchedule : ViewModel() {
     private val _loading = MutableStateFlow(false)

@@ -1,8 +1,8 @@
-package com.example.peakform.ViewModel.auth
+package com.example.peakform.viewmodel.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.peakform.API.AuthService
+import com.example.peakform.api.AuthService
 import com.example.peakform.data.model.RegisterRequest
 import com.example.peakform.data.model.RegisterResponse
 import com.example.peakform.data.model.VerifyRegisterRequest

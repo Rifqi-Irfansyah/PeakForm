@@ -1,4 +1,4 @@
-package com.example.peakform.Screens
+package com.example.peakform.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
