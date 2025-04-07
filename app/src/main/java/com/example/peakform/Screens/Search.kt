@@ -128,7 +128,7 @@ fun Search(navController: NavController? = null, viewModel: VMSearch = viewModel
                 title = exercise.Name ?: "Unknown Exercise",
                 onClick = { viewModel.onExerciseClicked(exercise) }
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 

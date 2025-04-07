@@ -38,71 +38,83 @@ fun CardExercise(
         }
         .build()
 
-    BoxWithConstraints(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1f)
+            .height(180.dp)
             .clip(RoundedCornerShape(24.dp))
-            .clickable { onClick() }
-            .background(MaterialTheme.colorScheme.surface)
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        val fullImageUrl = imageUrl?.let { "${ExerciseService.getBaseUrlForImages()}$it" }
-
-        if (imageUrl != null) {
-            val request = ImageRequest.Builder(context)
-                .data(fullImageUrl)
-                .crossfade(true)
-                .build()
-
-            SubcomposeAsyncImage(
-                model = request,
-                imageLoader = imageLoader,
-                contentDescription = "Exercise Background Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize(),
-                loading = {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
-                    )
-                },
-                error = {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(MaterialTheme.colorScheme.errorContainer),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Failed to load background",
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
-                }
-            )
-        } else {
-            Box(
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                color = titleColor ?: MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
-                    .matchParentSize()
-                    .background(MaterialTheme.colorScheme.errorContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No background available",
-                    color = MaterialTheme.colorScheme.onErrorContainer
+                    .weight(1f)
+                    .padding(end = 8.dp)
+            )
+
+            val fullImageUrl = imageUrl?.let { "${ExerciseService.getBaseUrlForImages()}$it" }
+
+            if (imageUrl != null) {
+                val request = ImageRequest.Builder(context)
+                    .data(fullImageUrl)
+                    .crossfade(true)
+                    .build()
+
+                SubcomposeAsyncImage(
+                    model = request,
+                    imageLoader = imageLoader,
+                    contentDescription = "Exercise Image",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .height(140.dp)
+                        .aspectRatio(1f),
+                    loading = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.secondary)
+                        )
+                    },
+                    error = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.errorContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Failed to load",
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .height(140.dp)
+                        .aspectRatio(1f)
+                        .background(MaterialTheme.colorScheme.errorContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No image",
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
             }
         }
-
-        Text(
-            text = title,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            color = titleColor ?: MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(20.dp)
-        )
     }
 }
+
