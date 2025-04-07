@@ -1,5 +1,6 @@
 package com.example.peakform.Screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -124,8 +125,8 @@ fun Search(navController: NavController? = null, viewModel: VMSearch = viewModel
 
         items(exercises) { exercise ->
             CardExercise(
-                imageUrl = exercise.Image,
-                title = exercise.Name ?: "Unknown Exercise",
+                imageUrl = exercise.image,
+                title = exercise.name ?: "Unknown Exercise",
                 onClick = { viewModel.onExerciseClicked(exercise) }
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -304,9 +305,16 @@ fun Search(navController: NavController? = null, viewModel: VMSearch = viewModel
     }
 
     selectedExercise?.let { exercise ->
+        Log.d("ExerciseDetail", "Name: ${exercise.name}")
+        Log.d("ExerciseDetail", "Type: ${exercise.type}")
+        Log.d("ExerciseDetail", "Muscle: ${exercise.muscle}")
+        Log.d("ExerciseDetail", "Equipment: ${exercise.equipment}")
+        Log.d("ExerciseDetail", "Difficulty: ${exercise.difficulty}")
+        Log.d("ExerciseDetail", "Instructions: ${exercise.instructions}")
+        Log.d("ExerciseDetail", "Image: ${exercise.image}")
         AlertDialog(
             onDismissRequest = { viewModel.clearSelectedExercise() },
-            title = { Text(exercise.Name ?: "Unknown Exercise") },
+            title = { Text(exercise.name ?: "Unknown Exercise") },
             text = {
                 Column(
                     modifier = Modifier
@@ -314,17 +322,17 @@ fun Search(navController: NavController? = null, viewModel: VMSearch = viewModel
                         .padding(8.dp)
                 ) {
                     CardExercise(
-                        imageUrl = exercise.Image,
-                        title = exercise.Name ?: "Unknown Exercise",
+                        imageUrl = exercise.image,
+                        title = exercise.name ?: "Unknown Exercise",
                         onClick = {}
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Type: ${exercise.Type ?: "N/A"}")
-                    Text("Muscle: ${exercise.Muscle ?: "N/A"}")
-                    Text("Equipment: ${exercise.Equipment ?: "N/A"}")
-                    Text("Difficulty: ${exercise.Difficulty ?: "N/A"}")
+                    Text("Type: ${exercise.type ?: "N/A"}")
+                    Text("Muscle: ${exercise.muscle ?: "N/A"}")
+                    Text("Equipment: ${exercise.equipment ?: "N/A"}")
+                    Text("Difficulty: ${exercise.difficulty ?: "N/A"}")
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Instructions: ${exercise.Instructions ?: "N/A"}")
+                    Text("Instructions: ${exercise.instructions ?: "N/A"}")
                 }
             },
             confirmButton = {

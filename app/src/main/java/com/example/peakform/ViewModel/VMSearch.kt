@@ -106,17 +106,17 @@ class VMSearch : ViewModel() {
         _difficultyFilter.value = difficulty
 
         _exercises.value = _allExercises.value.filter { exercise ->
-            val matchesName = name.isNullOrEmpty() || exercise.Name?.contains(name, ignoreCase = true) == true
-            val matchesType = type.isNullOrEmpty() || exercise.Type == type
-            val matchesMuscle = muscle.isNullOrEmpty() || exercise.Muscle == muscle
-            val matchesEquipment = equipment.isNullOrEmpty() || exercise.Equipment == equipment
-            val matchesDifficulty = difficulty.isNullOrEmpty() || exercise.Difficulty == difficulty
+            val matchesName = name.isNullOrEmpty() || exercise.name?.contains(name, ignoreCase = true) == true
+            val matchesType = type.isNullOrEmpty() || exercise.type == type
+            val matchesMuscle = muscle.isNullOrEmpty() || exercise.muscle == muscle
+            val matchesEquipment = equipment.isNullOrEmpty() || exercise.equipment == equipment
+            val matchesDifficulty = difficulty.isNullOrEmpty() || exercise.difficulty == difficulty
             matchesName && matchesType && matchesMuscle && matchesEquipment && matchesDifficulty
         }
     }
 
-    fun getUniqueTypes(): List<String> = _allExercises.value.mapNotNull { it.Type }.distinct()
-    fun getUniqueMuscles(): List<String> = _allExercises.value.mapNotNull { it.Muscle }.distinct()
-    fun getUniqueEquipment(): List<String> = _allExercises.value.mapNotNull { it.Equipment }.distinct()
-    fun getUniqueDifficulties(): List<String> = _allExercises.value.mapNotNull { it.Difficulty }.distinct()
+    fun getUniqueTypes(): List<String> = _allExercises.value.mapNotNull { it.type }.distinct()
+    fun getUniqueMuscles(): List<String> = _allExercises.value.mapNotNull { it.muscle }.distinct()
+    fun getUniqueEquipment(): List<String> = _allExercises.value.mapNotNull { it.equipment }.distinct()
+    fun getUniqueDifficulties(): List<String> = _allExercises.value.mapNotNull { it.difficulty }.distinct()
 }

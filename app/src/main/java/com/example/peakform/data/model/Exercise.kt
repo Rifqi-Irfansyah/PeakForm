@@ -1,5 +1,7 @@
 package com.example.peakform.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class ApiResponse<T>(
     val status: String,
     val message: String,
@@ -7,11 +9,18 @@ data class ApiResponse<T>(
 )
 
 data class Exercise(
-    val Name: String,
-    val Type: String,
-    val Muscle: String,
-    val Equipment: String,
-    val Difficulty: String,
-    val Instructions: String,
-    val Image: String?
+    @SerializedName("Name")
+    val name: String,
+    @SerializedName("Type")
+    val type: String,
+    @SerializedName("Muscle")
+    val muscle: String,
+    @SerializedName("Equipment")
+    val equipment: String,
+    @SerializedName("Difficulty")
+    val difficulty: String,
+    @SerializedName("Instructions")
+    val instructions: String,
+    @SerializedName("Image")
+    val image: String?
 )
