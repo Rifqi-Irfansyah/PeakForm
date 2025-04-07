@@ -1,4 +1,4 @@
-package com.example.peakform.Screens
+package com.example.peakform.Screens.schedule
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.peakform.Navigation.Screens
 import com.example.peakform.R
+import com.example.peakform.Screens.PopupState
 import com.example.peakform.ViewModel.VMMakeSchedule
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import kotlinx.coroutines.delay

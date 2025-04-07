@@ -14,8 +14,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.peakform.Screens.auth.Login
 import com.example.peakform.Screens.Home
-import com.example.peakform.Screens.MakeSchedule
+import com.example.peakform.Screens.schedule.MakeSchedule
 import com.example.peakform.Screens.Profile
+import com.example.peakform.Screens.schedule.ShowSchedule
 import com.example.peakform.Screens.auth.register.Register
 import com.example.peakform.Screens.auth.register.VerifyRegister
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -54,6 +55,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
         composable(Screens.MakeSchedule.route) {
             MakeSchedule(navController)
+        }
+        composable(Screens.ShowSchedule.route) {
+            ShowSchedule(navController)
         }
     }
 }
