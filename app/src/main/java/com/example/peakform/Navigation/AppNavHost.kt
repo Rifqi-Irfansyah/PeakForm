@@ -1,5 +1,8 @@
 package com.example.peakform.Navigation
 
+import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -19,11 +22,17 @@ import com.example.peakform.Screens.Profile
 import com.example.peakform.Screens.schedule.ShowSchedule
 import com.example.peakform.Screens.auth.register.Register
 import com.example.peakform.Screens.auth.register.VerifyRegister
+import com.example.peakform.Screens.schedule.DetailSchedule
+import com.example.peakform.ViewModel.VMShowSchedule
+import com.example.peakform.data.model.ScheduleData
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 
+@SuppressLint("ViewModelConstructorInComposable")
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
+    val vmShowSchedule: VMShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
     AnimatedNavHost(
         navController = navController,
         startDestination = Screens.Auth.route,
@@ -57,7 +66,10 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             MakeSchedule(navController)
         }
         composable(Screens.ShowSchedule.route) {
-            ShowSchedule(navController)
+            ShowSchedule(navController, vmShowSchedule)
+        }
+        composable(Screens.DetailSchedule.route) {
+            DetailSchedule(viewModel = vmShowSchedule)
         }
     }
 }

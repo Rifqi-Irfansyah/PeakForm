@@ -17,6 +17,13 @@ class VMShowSchedule : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    private val _selectedSchedule = MutableStateFlow<Schedule?>(null)
+    val selectedSchedule: StateFlow<Schedule?> = _selectedSchedule
+
+    fun selectSchedule(schedule: Schedule) {
+        _selectedSchedule.value = schedule
+    }
+
     val idUser = "115dd593-1f58-454f-bd25-318cfd2b4810"
 
     init {

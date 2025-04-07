@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.peakform.Navigation.Screens
 import com.example.peakform.ViewModel.VMShowSchedule
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.getDayName
@@ -65,7 +66,7 @@ fun ShowSchedule(navController: NavController, vmShowSchedule: VMShowSchedule = 
                 ) {
                     Text("Back")
                 }
-                ScheduleList(schedules?.schedules ?: emptyList())
+                ScheduleList(schedules?.schedules ?: emptyList(), navController, vmShowSchedule)
             }
 
         }
@@ -74,21 +75,21 @@ fun ShowSchedule(navController: NavController, vmShowSchedule: VMShowSchedule = 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleList(schedules: List<Schedule>) {
+fun ScheduleList(schedules: List<Schedule>, navController: NavController, vmShowSchedule: VMShowSchedule) {
     LazyColumn (
         modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 50.dp)
     ){
         items(schedules.size) { index ->
             val schedule = schedules[index]
-            ScheduleItem(schedule)
+            ScheduleItem(schedule, navController, vmShowSchedule)
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleItem(schedule: Schedule){
+fun ScheduleItem(schedule: Schedule, navController: NavController, vmShowSchedule: VMShowSchedule){
     val today = LocalDate.now().dayOfWeek.value // Monday = 1, Sunday = 7
     val isToday = schedule.day == today
 
@@ -98,7 +99,10 @@ fun ScheduleItem(schedule: Schedule){
             .padding(0.dp, 8.dp)
             .clip(RoundedCornerShape(16.dp))
             .height(100.dp)
-            .clickable {  },
+            .clickable {
+                vmShowSchedule.selectSchedule(schedule)
+                navController.navigate(Screens.DetailSchedule.route)
+            },
     ) {
         Card(
             modifier = Modifier
