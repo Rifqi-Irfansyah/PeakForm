@@ -3,7 +3,7 @@ package com.example.peakform.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.peakform.API.ExerciseService
+import com.example.peakform.api.ExerciseService
 import com.example.peakform.data.model.Exercise
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

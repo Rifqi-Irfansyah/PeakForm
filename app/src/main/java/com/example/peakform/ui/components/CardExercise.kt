@@ -20,7 +20,7 @@ import coil.ImageLoader
 import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import com.example.peakform.API.ExerciseService
+import com.example.peakform.api.ExerciseService
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable

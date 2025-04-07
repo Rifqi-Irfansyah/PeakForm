@@ -17,8 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import com.example.peakform.ViewModel.VMSearch
+import com.example.peakform.viewmodel.VMSearch
 import com.example.peakform.ui.components.CardExercise
 
 @OptIn(ExperimentalMaterial3Api::class)

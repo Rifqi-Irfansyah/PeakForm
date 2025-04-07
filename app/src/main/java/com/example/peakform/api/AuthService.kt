@@ -1,5 +1,6 @@
 package com.example.peakform.api
 
+import com.example.peakform.api.BASE_URL
 import com.example.peakform.data.model.AuthRequest
 import com.example.peakform.data.model.AuthResponse
 import com.example.peakform.data.model.RegisterRequest
