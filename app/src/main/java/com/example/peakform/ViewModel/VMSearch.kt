@@ -1,4 +1,4 @@
-package com.example.peakform.ViewModel
+package com.example.peakform.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

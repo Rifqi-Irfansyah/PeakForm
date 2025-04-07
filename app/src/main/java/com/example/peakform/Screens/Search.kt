@@ -1,4 +1,4 @@
-package com.example.peakform.Screens
+package com.example.peakform.screens
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
