@@ -1,6 +1,5 @@
 package com.example.peakform.api
 
-import com.example.peakform.api.BASE_URL
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
