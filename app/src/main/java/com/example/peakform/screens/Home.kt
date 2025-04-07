@@ -45,7 +45,7 @@ fun Home(navController: NavController, viewModel: VMHome = viewModel()){
                         backgroundRes = R.drawable.cardgoal,
                         title = "YOUR\nSCHEDULE",
                         titleColor = Color.White,
-                        onClick = { navController.navigate(Screens.MakeSchedule.route)}
+                        onClick = { navController.navigate(Screens.ShowSchedule.route)}
                     )
                 }
                 else{

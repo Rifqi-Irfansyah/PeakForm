@@ -1,5 +1,8 @@
 package com.example.peakform.navigation
 
+import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -12,19 +15,25 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.peakform.screens.schedule.DetailSchedule
+import com.example.peakform.screens.schedule.ShowSchedule
+import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.screens.Home
-import com.example.peakform.screens.MakeSchedule
 import com.example.peakform.screens.Profile
 import com.example.peakform.screens.Search
 import com.example.peakform.screens.auth.Login
 import com.example.peakform.screens.auth.register.Register
 import com.example.peakform.screens.auth.register.VerifyRegister
+import com.example.peakform.screens.schedule.MakeSchedule
 import com.example.peakform.viewmodel.VMUser
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 
+@SuppressLint("ViewModelConstructorInComposable")
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, VMUser: VMUser) {
+    val vmShowSchedule: VMShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
     AnimatedNavHost(
         navController = navController,
         startDestination = Screens.Auth.route,
@@ -60,6 +69,11 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
         composable(Screens.Search.route) {
             Search(navController)
         }
+        composable(Screens.ShowSchedule.route) {
+            ShowSchedule(navController, vmShowSchedule)
+        }
+        composable(Screens.DetailSchedule.route) {
+            DetailSchedule(viewModel = vmShowSchedule)
+        }
     }
 }
-

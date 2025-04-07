@@ -1,10 +1,11 @@
 package com.example.peakform.api
 
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import com.example.peakform.data.model.ScheduleResponse
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.Response
-import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -16,12 +17,12 @@ interface ApiService {
     suspend fun createSchedule(@Body responseBody: MutableMap<String, Any>): Response<ResponseBody>
 
     @GET("schedule")
-    suspend fun getSchedule(@Query("UID") userId: String): Response<ResponseBody>
+    suspend fun getSchedule(@Query("UID") userId: String): Response<ScheduleResponse>
 
     companion object {
         val instance: ApiService by lazy {
             Retrofit.Builder()
-                .baseUrl(BASE_URL.toHttpUrlOrNull()!!)
+                .baseUrl(BASE_URL.toHttpUrl())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(ApiService::class.java)
