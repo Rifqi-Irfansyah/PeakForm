@@ -12,7 +12,8 @@ fun BottomNavBar(navController: NavController) { // Ambil NavController dari lua
     val currentDestination = navBackStackEntry?.destination
     val screensWithBottomBar = listOf(
         Screens.Home.route,
-        Screens.Profile.route
+        Screens.Profile.route,
+        Screens.Search.route
     )
 
     if (currentDestination?.route in screensWithBottomBar) { // Hanya tampil di layar tertentu

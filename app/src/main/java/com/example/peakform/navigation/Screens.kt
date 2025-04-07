@@ -11,4 +11,5 @@ sealed class Screens(val route : String) {
             return "verify_register_screen/$email"
         }
     }
+    object Search : Screens("search_screen")
 }

@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import com.example.peakform.screens.Home
 import com.example.peakform.screens.MakeSchedule
 import com.example.peakform.screens.Profile
+import com.example.peakform.screens.Search
 import com.example.peakform.screens.auth.Login
 import com.example.peakform.screens.auth.register.Register
 import com.example.peakform.screens.auth.register.VerifyRegister
@@ -55,6 +56,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
         }
         composable(Screens.MakeSchedule.route) {
             MakeSchedule(navController)
+        }
+        composable(Screens.Search.route) {
+            Search(navController)
         }
     }
 }
