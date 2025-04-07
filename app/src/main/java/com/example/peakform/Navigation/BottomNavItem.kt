@@ -21,7 +21,7 @@ data class BottomNavItem(
             BottomNavItem(
                 label = "Search",
                 icon = Icons.Filled.Search,
-                route = Screens.Home.route
+                route = Screens.Search.route
             ),
             BottomNavItem(
                 label = "Profile",

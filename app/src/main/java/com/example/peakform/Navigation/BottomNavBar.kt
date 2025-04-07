@@ -16,7 +16,8 @@ fun BottomNavBar() {
     val currentDestination = navBackStackEntry?.destination
     val screensWithBottomBar = listOf(
         Screens.Home.route,
-        Screens.Profile.route
+        Screens.Profile.route,
+        Screens.Search.route
     )
 
     Scaffold(

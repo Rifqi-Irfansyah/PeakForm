@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.peakform.Screens.Home
 import com.example.peakform.Screens.MakeSchedule
 import com.example.peakform.Screens.Profile
+import com.example.peakform.Screens.Search
 
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -21,6 +22,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
         composable(Screens.Profile.route) {
             Profile(navController)
+        }
+        composable(Screens.Search.route) {
+            Search(navController)
         }
         composable(Screens.MakeSchedule.route) {
             MakeSchedule(navController)
