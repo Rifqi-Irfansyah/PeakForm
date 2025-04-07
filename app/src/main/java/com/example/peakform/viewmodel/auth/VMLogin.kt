@@ -51,10 +51,11 @@ class VMLogin : ViewModel() {
     private fun parseErrorMessage(json: String): String {
         return try {
             val jsonObject = JSONObject(json)
-            val details = jsonObject.getJSONObject("details")
-            val emailError = details.getString("Email")
-            "Email: $emailError"
-        } catch (e: JSONException) {
+            val details = jsonObject.optString("details", "No details provided")
+            val message = jsonObject.optString("message", "No message provided")
+            val status = jsonObject.optString("status", "No status provided")
+            "($status) $message\n $details"
+        } catch (_: JSONException) {
             "Unknown error"
         }
     }

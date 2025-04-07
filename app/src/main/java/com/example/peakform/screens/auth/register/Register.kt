@@ -66,7 +66,7 @@ fun Register(navController: NavController, viewModel: VMRegister = viewModel()) 
             coroutineScope.launch {
                 delay(2000L)
                 navController.navigate(Screens.VerifyRegister.passEmail(emailState.value)) {
-                    popUpTo(Screens.Auth.route) { inclusive = true }
+                    popUpTo(Screens.Register.route) { inclusive = true }
                 }
             }
         }

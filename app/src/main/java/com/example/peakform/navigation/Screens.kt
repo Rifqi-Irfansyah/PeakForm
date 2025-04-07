@@ -3,6 +3,7 @@ package com.example.peakform.navigation
 sealed class Screens(val route : String) {
     object Home : Screens("home_screen")
     object Profile : Screens("profile_screen")
+    object ChangePassword : Screens("change_password_screen")
     object MakeSchedule : Screens("makeschedule_screen")
     object Auth : Screens("auth_screen")
     object Register : Screens("register_screen")

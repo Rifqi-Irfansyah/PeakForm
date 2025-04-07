@@ -1,4 +1,4 @@
-package com.example.peakform.screens.auth
+package com.example.peakform.screens.profile
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -10,14 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,42 +27,44 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.peakform.navigation.Screens
-import com.example.peakform.viewmodel.auth.VMLogin
+import androidx.navigation.NavController
 import com.example.peakform.data.model.PopupStatus
+import com.example.peakform.navigation.Screens
 import com.example.peakform.ui.components.Popup
+import com.example.peakform.viewmodel.VMProfile
 import com.example.peakform.viewmodel.VMUser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), userViewModel: VMUser = viewModel()) {
-    val emailState = remember { mutableStateOf("") }
-    val passwordState = remember { mutableStateOf("") }
-    val loading by loginViewModel.loading.collectAsState()
-    val success by loginViewModel.success.collectAsState()
-    val error by loginViewModel.error.collectAsState()
-    val user by loginViewModel.user.collectAsState()
+fun ChangePassword(
+    navController: NavController,
+    profileViewModel: VMProfile = viewModel(),
+    userViewModel: VMUser = viewModel(),
+) {
+    val oldPasswordSate = remember { mutableStateOf("") }
+    val newPasswordState = remember { mutableStateOf("") }
+    val loading by profileViewModel.loading.collectAsState()
+    val success by profileViewModel.success.collectAsState()
+    val error by profileViewModel.error.collectAsState()
+    val user = userViewModel.user
     val coroutineScope = rememberCoroutineScope()
-    var passwordVisible by remember { mutableStateOf(false) }
+    var oldPasswordVisible by remember { mutableStateOf(false) }
+    var newPasswordVisible by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-    val isEmailFocused = remember { mutableStateOf(false) }
-    val isPasswordFocused = remember { mutableStateOf(false) }
+    val isNewPasswordFocused = remember { mutableStateOf(false) }
+    val isOldPasswordFocused = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -71,6 +73,7 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         if (loading) {
             Popup(
                 status = PopupStatus.Loading,
@@ -78,16 +81,16 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
             )
         }
         if (success) {
-            Log.d("Login", "Login successful: $user")
+            Log.d("Login", "Your password has been changed successfully: $user")
             user?.let { userViewModel.updateUser(it) }
             Popup(
                 status = PopupStatus.Success,
-                popupMessage = "Login successful!"
+                popupMessage = "Your password has been changed!"
             )
 
             coroutineScope.launch {
                 delay(2000L)
-                navController.navigate(Screens.Home.route) {
+                navController.navigate(Screens.Profile.route) {
                     popUpTo(0) { inclusive = true }
                 }
             }
@@ -100,13 +103,13 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
 
             coroutineScope.launch {
                 delay(3000L)
-                loginViewModel.resetState()
+                profileViewModel.resetState()
             }
 
         }
 
         Text(
-            text = "PeakForm",
+            text = "Change Password",
             style = TextStyle(
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 40.sp,
@@ -115,7 +118,7 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
             modifier = Modifier.padding(bottom = 16.dp)
         )
         Text(
-            text = "Welcome back! Please login to your account.",
+            text = "Keep your account secure by updating your password regularly.",
             style = TextStyle(
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp
@@ -123,67 +126,73 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
             modifier = Modifier.padding(bottom = 32.dp)
         )
         OutlinedTextField(
-            value = emailState.value,
-            onValueChange = { emailState.value = it },
-            label = { Text("Email") },
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged {
-                    isEmailFocused.value = it.isFocused
-                },
-            trailingIcon = {
-                val iconColor = if (isEmailFocused.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                Icon(
-                    imageVector = Icons.Filled.Mail,
-                    contentDescription = null,
-                    tint = iconColor
-                )
-            }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = passwordState.value,
-            onValueChange = { passwordState.value = it },
+            value = oldPasswordSate.value,
+            onValueChange = { oldPasswordSate.value = it },
             label = { Text("Password") },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
                 .onFocusChanged {
-                    isPasswordFocused.value = it.isFocused
+                    isOldPasswordFocused.value = it.isFocused
                 },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (oldPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
-                val image = if (passwordVisible)
+                val image = if (oldPasswordVisible)
                     Icons.Filled.Visibility
                 else
                     Icons.Filled.VisibilityOff
 
-                val iconColor = if (isPasswordFocused.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                val iconColor = if (isOldPasswordFocused.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
 
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(onClick = { oldPasswordVisible = !oldPasswordVisible }) {
+                    Icon(imageVector = image, contentDescription = null, tint = iconColor)
+                }
+            }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = newPasswordState.value,
+            onValueChange = { newPasswordState.value = it },
+            label = { Text("Password") },
+            shape = MaterialTheme.shapes.large,
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
+                .onFocusChanged {
+                    isNewPasswordFocused.value = it.isFocused
+                },
+            visualTransformation = if (newPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (newPasswordVisible)
+                    Icons.Filled.Visibility
+                else
+                    Icons.Filled.VisibilityOff
+
+                val iconColor = if (isNewPasswordFocused.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+
+                IconButton(onClick = { newPasswordVisible = !newPasswordVisible }) {
                     Icon(imageVector = image, contentDescription = null, tint = iconColor)
                 }
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { loginViewModel.login(emailState.value, passwordState.value) },
+            onClick = {
+                profileViewModel.changePassword(
+                    user?.id.toString(),
+                    oldPasswordSate.value,
+                    newPasswordState.value
+                )
+            },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
             enabled = !loading
         ) {
             Text(
-                "Login",
+                "Change Password",
                 color = MaterialTheme.colorScheme.onPrimary,
             )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        TextButton(
-            onClick = { navController.navigate(Screens.Register.route) },
-        ) {
-            Text("Don't have an account? Sign up")
         }
     }
 }

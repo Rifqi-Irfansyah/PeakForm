@@ -1,4 +1,4 @@
-package com.example.peakform.screens
+package com.example.peakform.screens.profile
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.peakform.data.model.PopupStatus
+import com.example.peakform.navigation.Screens
 import com.example.peakform.ui.components.Popup
 import com.example.peakform.viewmodel.VMProfile
 import com.example.peakform.viewmodel.VMUser
@@ -96,18 +97,20 @@ fun Profile(navController: NavController, profileViewModel: VMProfile = viewMode
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /* Add logout functionality here */ },
+            onClick = { navController.navigate(Screens.ChangePassword.route) },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
             enabled = !loading
         ) {
             Text(
-                "Edit Profile",
+                "Change Password",
                 color = MaterialTheme.colorScheme.onPrimary,
             )
         }
         Button(
-            onClick = { /* Add logout functionality here */ },
+            onClick = { navController.navigate(Screens.Auth.route) {
+                popUpTo(0) { inclusive = true }
+            } },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
             enabled = !loading

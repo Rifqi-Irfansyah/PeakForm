@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peakform.api.AuthService
 import com.example.peakform.data.model.RegisterRequest
-import com.example.peakform.data.model.RegisterResponse
+import com.example.peakform.data.model.GenericResponse
 import com.example.peakform.data.model.VerifyRegisterRequest
 import com.example.peakform.data.model.VerifyRegisterResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,7 +52,7 @@ class VMRegister: ViewModel() {
         viewModelScope.launch {
             _loading.value = true
             try {
-                val response: Response<RegisterResponse> = AuthService.instance.register(
+                val response: Response<GenericResponse> = AuthService.instance.register(
                     RegisterRequest(email)
                 )
                 if (response.isSuccessful) {
@@ -75,7 +75,7 @@ class VMRegister: ViewModel() {
            val message = jsonObject.optString("message", "No message provided")
            val status = jsonObject.optString("status", "No status provided")
            "($status) $message\n $details"
-       } catch (e: JSONException) {
+       } catch (_: JSONException) {
            "Unknown error"
        }
    }

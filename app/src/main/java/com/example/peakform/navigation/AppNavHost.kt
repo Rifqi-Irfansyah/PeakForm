@@ -14,11 +14,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.peakform.screens.Home
 import com.example.peakform.screens.MakeSchedule
-import com.example.peakform.screens.Profile
+import com.example.peakform.screens.profile.Profile
 import com.example.peakform.screens.Search
 import com.example.peakform.screens.auth.Login
 import com.example.peakform.screens.auth.register.Register
 import com.example.peakform.screens.auth.register.VerifyRegister
+import com.example.peakform.screens.profile.ChangePassword
 import com.example.peakform.viewmodel.VMUser
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 
@@ -47,6 +48,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
         ) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             VerifyRegister(navController, email = email)
+        }
+        composable(Screens.ChangePassword.route) {
+            ChangePassword(navController, userViewModel = VMUser)
         }
         composable(Screens.Home.route) {
             Home(navController)
