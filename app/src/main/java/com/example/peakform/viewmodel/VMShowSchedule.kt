@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peakform.api.ApiService
+import com.example.peakform.data.model.Exercises
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.ScheduleData
 import kotlinx.coroutines.flow.MutableStateFlow

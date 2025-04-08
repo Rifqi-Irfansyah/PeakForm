@@ -41,6 +41,7 @@ import com.example.peakform.data.model.Exercises
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.ScheduleData
 import com.example.peakform.data.model.getDayName
+import com.example.peakform.navigation.Screens
 import com.example.peakform.ui.components.CardExerciseSchedule
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import java.time.LocalDate
@@ -90,9 +91,15 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule){
                 if (isToday) {
                     Button(
                         modifier = Modifier
+                            .height(50.dp)
                             .align(Alignment.BottomCenter),
-                        onClick = { },
-                    ) { Text("Start Exercise") }
+                        onClick = {
+                            navController.navigate(Screens.StartExercise.route)
+                        },
+                    ) { Text(
+                        text = "Start Exercise",
+                        fontSize = 18.sp,
+                    ) }
                 }
                 else {
                     Button(
@@ -126,7 +133,6 @@ fun ExerciseList(exercises: List<Exercises>) {
                 exercise
             )
             Spacer(modifier = Modifier.height(12.dp))
-//            ExerciseItem(exercise)
         }
     }
 }

@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.peakform.data.model.Exercises
 import com.example.peakform.screens.schedule.DetailSchedule
 import com.example.peakform.screens.schedule.ShowSchedule
 import com.example.peakform.viewmodel.VMShowSchedule
@@ -25,6 +26,7 @@ import com.example.peakform.screens.auth.Login
 import com.example.peakform.screens.auth.register.Register
 import com.example.peakform.screens.auth.register.VerifyRegister
 import com.example.peakform.screens.schedule.MakeSchedule
+import com.example.peakform.screens.schedule.StartExercise
 import com.example.peakform.viewmodel.VMUser
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 
@@ -75,6 +77,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
         }
         composable(Screens.DetailSchedule.route) {
             DetailSchedule(navController, viewModel = vmShowSchedule)
+        }
+        composable(Screens.StartExercise.route) {
+            StartExercise(navController, viewModel = vmShowSchedule)
         }
     }
 }
