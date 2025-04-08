@@ -123,9 +123,7 @@ fun ExerciseList(exercises: List<Exercises>) {
         items(exercises.size) { index ->
             val exercise = exercises[index]
             CardExerciseSchedule(
-                title = exercise.name,
-                imageUrl = exercise.image,
-                onClick = {},
+                exercise
             )
             Spacer(modifier = Modifier.height(12.dp))
 //            ExerciseItem(exercise)
