@@ -33,7 +33,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, VMUser: VMUser) {
-    val vmShowSchedule: VMShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
+    var vmShowSchedule: VMShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
     AnimatedNavHost(
         navController = navController,
         startDestination = Screens.Auth.route,
@@ -70,10 +70,11 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
             Search(navController)
         }
         composable(Screens.ShowSchedule.route) {
+            vmShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
             ShowSchedule(navController, vmShowSchedule)
         }
         composable(Screens.DetailSchedule.route) {
-            DetailSchedule(viewModel = vmShowSchedule)
+            DetailSchedule(navController, viewModel = vmShowSchedule)
         }
     }
 }

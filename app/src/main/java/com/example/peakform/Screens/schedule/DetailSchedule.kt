@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,40 +41,73 @@ import com.example.peakform.data.model.Exercises
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.ScheduleData
 import com.example.peakform.data.model.getDayName
+import com.example.peakform.ui.components.CardExerciseSchedule
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import java.time.LocalDate
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DetailSchedule(viewModel : VMShowSchedule){
+fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule){
     val selectedScheduleState = viewModel.selectedSchedule.collectAsState()
     val schedule = selectedScheduleState.value
+    val today = LocalDate.now().dayOfWeek.value // Monday = 1, Sunday = 7
+    val isToday = schedule?.day == today
 
     NavigationBarMediumTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize().padding(15.dp)
-                    .fillMaxHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally,
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxSize().padding(15.dp)
+//                    .fillMaxHeight(),
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//            )
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(15.dp)
+                .fillMaxHeight()
             ) {
-
                 Button(
                     modifier = Modifier
-                        .align(alignment = Alignment.Start),
-                    onClick = {
-                    }
-                ) {
-                    Text("Back")
-                }
+                        .align(Alignment.TopStart),
+                    onClick = { navController.popBackStack() }
+                ) { Text("Back") }
+
                 if (schedule != null) {
-                    ExerciseList(schedule.exercise)
+                    Column(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 60.dp, top = 50.dp)
+                    ) {
+                        ExerciseList(schedule.exercise)
+                    }
                 }
                 else {
                     Text("Tidak ada jadwal yang dipilih.")
                 }
+
+                if (isToday) {
+                    Button(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter),
+                        onClick = { },
+                    ) { Text("Start Exercise") }
+                }
+                else {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter),
+                        onClick = { },
+                    ) { Text(
+                        text = "Can't Start Yet ",
+                        fontSize = 16.sp,
+                        style = TextStyle( fontStyle = FontStyle.Italic),
+                        color = MaterialTheme.colorScheme.onBackground
+                    ) }
+                }
+
             }
 
         }
@@ -81,54 +118,17 @@ fun DetailSchedule(viewModel : VMShowSchedule){
 fun ExerciseList(exercises: List<Exercises>) {
     LazyColumn (
         modifier = Modifier
-            .padding(16.dp, 16.dp, 16.dp, 50.dp)
+            .padding(16.dp, 5.dp, 16.dp, 0.dp)
     ){
         items(exercises.size) { index ->
             val exercise = exercises[index]
-            ExerciseItem(exercise)
-        }
-    }
-}
-
-@Composable
-fun ExerciseItem(exercise: Exercises){
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(0.dp, 8.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .height(120.dp)
-            .clickable {
-            },
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor =
-                    MaterialTheme.colorScheme.primary
+            CardExerciseSchedule(
+                title = exercise.name,
+                imageUrl = exercise.image,
+                onClick = {},
             )
-        ) {
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .padding(20.dp)
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = exercise.name,
-                    fontSize = 20.sp,
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = exercise.repetition.toString(),
-                    fontSize = 18.sp,
-                    color = Color.White,
-                )
-            }
+            Spacer(modifier = Modifier.height(12.dp))
+//            ExerciseItem(exercise)
         }
     }
 }
