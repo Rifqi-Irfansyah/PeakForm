@@ -35,17 +35,18 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, VMUser: VMUser) {
+fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, VMUser: VMUser, startDestination: String) {
     var vmShowSchedule: VMShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
     AnimatedNavHost(
         navController = navController,
-        startDestination = Screens.Auth.route,
+        startDestination = startDestination,
         enterTransition = {
             slideInHorizontally(initialOffsetX = { it }) + fadeIn(animationSpec = tween(300))
         },
         exitTransition = {
             slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(animationSpec = tween(300))
-        }
+        },
+        modifier = modifier,
     ) {
         // Authentication screens
         composable(Screens.Auth.route) {

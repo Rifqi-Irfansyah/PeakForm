@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,7 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
     val error by loginViewModel.error.collectAsState()
     val user by loginViewModel.user.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -123,7 +125,7 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { loginViewModel.login(emailState.value, passwordState.value) },
+            onClick = { loginViewModel.login(emailState.value, passwordState.value, context) },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
             enabled = !loading

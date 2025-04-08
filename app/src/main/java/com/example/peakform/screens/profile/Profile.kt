@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.example.peakform.data.model.PopupStatus
 import com.example.peakform.navigation.Screens
 import com.example.peakform.ui.components.Popup
+import com.example.peakform.utils.PrefManager
 import com.example.peakform.viewmodel.VMProfile
 import com.example.peakform.viewmodel.VMUser
 import kotlinx.coroutines.delay
@@ -35,6 +36,7 @@ fun Profile(navController: NavController, profileViewModel: VMProfile = viewMode
     val error by profileViewModel.error.collectAsState()
     val user = userViewModel.user
     val coroutineScope = rememberCoroutineScope()
+    val prefManager = PrefManager(navController.context)
 
     Column(
         modifier = Modifier
@@ -108,7 +110,9 @@ fun Profile(navController: NavController, profileViewModel: VMProfile = viewMode
             )
         }
         Button(
-            onClick = { navController.navigate(Screens.Auth.route) {
+            onClick = {
+                prefManager.clearToken()
+                navController.navigate(Screens.Auth.route) {
                 popUpTo(0) { inclusive = true }
             } },
             shape = MaterialTheme.shapes.large,

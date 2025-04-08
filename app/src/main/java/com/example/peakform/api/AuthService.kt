@@ -13,7 +13,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 
 interface AuthService {
@@ -34,6 +36,11 @@ interface AuthService {
 
     @POST("auth/reset-password")
     suspend fun resetPassword(@Body responseBody: ResetPasswordRequest): Response<GenericResponse>
+
+    @GET("/auth/user/{token}")
+    suspend fun getUser(
+        @Path("token") token: String,
+    ): Response<AuthResponse>
 
     companion object {
         val instance: AuthService by lazy {

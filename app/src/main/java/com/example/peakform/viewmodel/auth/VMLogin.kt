@@ -1,5 +1,6 @@
 package com.example.peakform.viewmodel.auth
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peakform.api.AuthService
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Response
-import android.util.Log
+import com.example.peakform.utils.PrefManager
 
 class VMLogin : ViewModel() {
     private val _loading = MutableStateFlow(false)
@@ -27,15 +28,16 @@ class VMLogin : ViewModel() {
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
 
-    fun login(username: String, password: String) {
+    fun login(username: String, password: String, context: Context) {
         viewModelScope.launch {
             _loading.value = true
             try {
                 val authRequest = AuthRequest(username, password)
                 val response: Response<AuthResponse> = AuthService.instance.auth(authRequest)
                 if (response.isSuccessful) {
+                    val token = response.body()?.data?.token ?: ""
+                    PrefManager(context).saveToken(token)
                     _user.value = response.body()?.data
-                    Log.d("User", "${_user.value}")
                     _success.value = true
                 } else {
                     _error.value = response.errorBody()?.string()?.let { parseErrorMessage(it) } ?: "Unknown error"
