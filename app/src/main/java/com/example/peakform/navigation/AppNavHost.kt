@@ -1,5 +1,8 @@
 package com.example.peakform.navigation
 
+import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -16,8 +19,6 @@ import com.example.peakform.screens.schedule.DetailSchedule
 import com.example.peakform.screens.schedule.ShowSchedule
 import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.screens.Home
-import com.example.peakform.screens.Profile
-import com.example.peakform.screens.MakeSchedule
 import com.example.peakform.screens.profile.Profile
 import com.example.peakform.screens.Search
 import com.example.peakform.screens.auth.Login
