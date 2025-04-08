@@ -3,8 +3,9 @@ package com.example.peakform.api
 import com.example.peakform.data.model.AuthRequest
 import com.example.peakform.data.model.AuthResponse
 import com.example.peakform.data.model.ChangePasswordRequest
-import com.example.peakform.data.model.RegisterRequest
+import com.example.peakform.data.model.EmailRequest
 import com.example.peakform.data.model.GenericResponse
+import com.example.peakform.data.model.ResetPasswordRequest
 import com.example.peakform.data.model.VerifyRegisterRequest
 import com.example.peakform.data.model.VerifyRegisterResponse
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -20,13 +21,19 @@ interface AuthService {
     suspend fun auth(@Body responseBody: AuthRequest): Response<AuthResponse>
 
     @POST("register")
-    suspend fun register(@Body responseBody: RegisterRequest): Response<GenericResponse>
+    suspend fun register(@Body responseBody: EmailRequest): Response<GenericResponse>
 
     @POST("register/verify-otp")
     suspend fun verifyRegister(@Body responseBody: VerifyRegisterRequest): Response<VerifyRegisterResponse>
 
     @POST("change-password")
     suspend fun changePassword(@Body responseBody: ChangePasswordRequest): Response<GenericResponse>
+
+    @POST("auth/forgot-password")
+    suspend fun forgotPassword(@Body responseBody: EmailRequest): Response<GenericResponse>
+
+    @POST("auth/reset-password")
+    suspend fun resetPassword(@Body responseBody: ResetPasswordRequest): Response<GenericResponse>
 
     companion object {
         val instance: AuthService by lazy {

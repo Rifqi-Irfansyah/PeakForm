@@ -13,7 +13,7 @@ data class AuthResponse(
     val data: User
 )
 
-data class RegisterRequest(
+data class EmailRequest(
     val email: String,
 )
 
@@ -25,9 +25,17 @@ data class ChangePasswordRequest(
     val newPassword: String
 )
 
+data class ResetPasswordRequest(
+    val email: String,
+    val otp: String,
+    @SerializedName("new_password")
+    val newPassword: String
+)
+
 data class GenericResponse(
     val message: String,
     val status: String,
+    val details: String? = null
 )
 
 data class VerifyRegisterRequest(

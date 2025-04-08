@@ -1,7 +1,6 @@
-package com.example.peakform.screens.auth
+package com.example.peakform.screens.auth.forgetpassword
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,28 +26,24 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.peakform.data.model.PopupStatus
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.peakform.navigation.Screens
-import com.example.peakform.ui.components.PasswordTextField
+import com.example.peakform.data.model.PopupStatus
 import com.example.peakform.ui.components.Popup
 import com.example.peakform.ui.components.TextFieldWithIcon
-import com.example.peakform.viewmodel.VMUser
-import com.example.peakform.viewmodel.auth.VMLogin
+import com.example.peakform.viewmodel.auth.VMForgetPassword
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), userViewModel: VMUser = viewModel()) {
+fun ForgetPassword(navController: NavController, forgetPassViewModel: VMForgetPassword = viewModel()) {
     val emailState = remember { mutableStateOf("") }
-    val passwordState = remember { mutableStateOf("") }
-    val loading by loginViewModel.loading.collectAsState()
-    val success by loginViewModel.success.collectAsState()
-    val error by loginViewModel.error.collectAsState()
-    val user by loginViewModel.user.collectAsState()
+    val loading by forgetPassViewModel.loading.collectAsState()
+    val success by forgetPassViewModel.success.collectAsState()
+    val error by forgetPassViewModel.error.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -65,18 +60,14 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
             )
         }
         if (success) {
-            Log.d("Login", "Login successful: $user")
-            user?.let { userViewModel.updateUser(it) }
             Popup(
                 status = PopupStatus.Success,
-                popupMessage = "Login successful!"
+                popupMessage = "Verification email sent!"
             )
 
             coroutineScope.launch {
                 delay(2000L)
-                navController.navigate(Screens.Home.route) {
-                    popUpTo(0) { inclusive = true }
-                }
+                navController.navigate(Screens.ResetPassword.passEmail(emailState.value))
             }
         }
         if (error != null) {
@@ -87,22 +78,30 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
 
             coroutineScope.launch {
                 delay(3000L)
-                loginViewModel.resetState()
+                forgetPassViewModel.resetState()
             }
 
         }
 
         Text(
-            text = "PeakForm",
+            text = "Forget Password",
             style = TextStyle(
                 color = MaterialTheme.colorScheme.primary,
-                fontSize = 40.sp,
+                fontSize = 35.sp,
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier.padding(bottom = 16.dp)
         )
         Text(
-            text = "Welcome back! Please login to your account.",
+            text = "Enter your email to reset your password",
+            style = TextStyle(
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 16.sp
+            ),
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = "and reclaim your journey!",
             style = TextStyle(
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp
@@ -115,30 +114,24 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
             label = "Email",
             icon = Icons.Filled.Mail,
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        PasswordTextField(
-            value = passwordState.value,
-            onValueChange = { passwordState.value = it },
-            label = "Password"
-        )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { loginViewModel.login(emailState.value, passwordState.value) },
+            onClick = { forgetPassViewModel.forgetPassword(emailState.value) },
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
             enabled = !loading
         ) {
             Text(
-                "Login",
+                "Verify Email",
                 color = MaterialTheme.colorScheme.onPrimary,
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
         TextButton(
-            onClick = { navController.navigate(Screens.ForgetPassword.route) },
+            onClick = { navController.navigate(Screens.Auth.route) },
             modifier = Modifier.height(34.dp),
         ) {
-            Text("Forget your password? Recover")
+            Text("Remembered your password? Login")
         }
         TextButton(
             onClick = { navController.navigate(Screens.Register.route) },
@@ -148,3 +141,4 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
         }
     }
 }
+

@@ -17,6 +17,8 @@ import com.example.peakform.screens.MakeSchedule
 import com.example.peakform.screens.profile.Profile
 import com.example.peakform.screens.Search
 import com.example.peakform.screens.auth.Login
+import com.example.peakform.screens.auth.forgetpassword.ForgetPassword
+import com.example.peakform.screens.auth.forgetpassword.ResetPassword
 import com.example.peakform.screens.auth.register.Register
 import com.example.peakform.screens.auth.register.VerifyRegister
 import com.example.peakform.screens.profile.ChangePassword
@@ -36,6 +38,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
             slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(animationSpec = tween(300))
         }
     ) {
+        // Authentication screens
         composable(Screens.Auth.route) {
             Login(navController, userViewModel = VMUser)
         }
@@ -49,15 +52,31 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
             val email = backStackEntry.arguments?.getString("email") ?: ""
             VerifyRegister(navController, email = email)
         }
-        composable(Screens.ChangePassword.route) {
-            ChangePassword(navController, userViewModel = VMUser)
+        composable(Screens.ForgetPassword.route) {
+            ForgetPassword(navController)
         }
+        composable(
+            route = "reset_password_screen/{email}",
+            arguments = listOf(navArgument("email") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            ResetPassword(navController, email = email)
+        }
+
+        // Home screen
         composable(Screens.Home.route) {
             Home(navController)
         }
+
+        // Profile screen
         composable(Screens.Profile.route) {
             Profile(navController, userViewModel = VMUser)
         }
+        composable(Screens.ChangePassword.route) {
+            ChangePassword(navController, userViewModel = VMUser)
+        }
+
+        // Other screens
         composable(Screens.MakeSchedule.route) {
             MakeSchedule(navController)
         }
