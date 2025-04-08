@@ -12,10 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -24,29 +21,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.peakform.navigation.Screens
-import com.example.peakform.viewmodel.auth.VMLogin
+import androidx.navigation.NavController
 import com.example.peakform.data.model.PopupStatus
+import com.example.peakform.navigation.Screens
+import com.example.peakform.ui.components.PasswordTextField
 import com.example.peakform.ui.components.Popup
+import com.example.peakform.ui.components.TextFieldWithIcon
 import com.example.peakform.viewmodel.VMUser
+import com.example.peakform.viewmodel.auth.VMLogin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -59,10 +50,6 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
     val error by loginViewModel.error.collectAsState()
     val user by loginViewModel.user.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    var passwordVisible by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
-    val isEmailFocused = remember { mutableStateOf(false) }
-    val isPasswordFocused = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -122,50 +109,17 @@ fun Login(navController: NavController, loginViewModel: VMLogin = viewModel(), u
             ),
             modifier = Modifier.padding(bottom = 32.dp)
         )
-        OutlinedTextField(
+        TextFieldWithIcon(
             value = emailState.value,
             onValueChange = { emailState.value = it },
-            label = { Text("Email") },
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged {
-                    isEmailFocused.value = it.isFocused
-                },
-            trailingIcon = {
-                val iconColor = if (isEmailFocused.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                Icon(
-                    imageVector = Icons.Filled.Mail,
-                    contentDescription = null,
-                    tint = iconColor
-                )
-            }
+            label = "Email",
+            icon = Icons.Filled.Mail,
         )
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
+        PasswordTextField(
             value = passwordState.value,
             onValueChange = { passwordState.value = it },
-            label = { Text("Password") },
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester)
-                .onFocusChanged {
-                    isPasswordFocused.value = it.isFocused
-                },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                val image = if (passwordVisible)
-                    Icons.Filled.Visibility
-                else
-                    Icons.Filled.VisibilityOff
-
-                val iconColor = if (isPasswordFocused.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, contentDescription = null, tint = iconColor)
-                }
-            }
+            label = "Password"
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(

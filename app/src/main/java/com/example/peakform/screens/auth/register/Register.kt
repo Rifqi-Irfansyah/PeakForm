@@ -8,9 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,6 +32,7 @@ import com.example.peakform.navigation.Screens
 import com.example.peakform.viewmodel.auth.VMRegister
 import com.example.peakform.data.model.PopupStatus
 import com.example.peakform.ui.components.Popup
+import com.example.peakform.ui.components.TextFieldWithIcon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -65,9 +67,7 @@ fun Register(navController: NavController, viewModel: VMRegister = viewModel()) 
 
             coroutineScope.launch {
                 delay(2000L)
-                navController.navigate(Screens.VerifyRegister.passEmail(emailState.value)) {
-                    popUpTo(Screens.Register.route) { inclusive = true }
-                }
+                navController.navigate(Screens.VerifyRegister.passEmail(emailState.value))
             }
         }
         if (error != null) {
@@ -108,12 +108,11 @@ fun Register(navController: NavController, viewModel: VMRegister = viewModel()) 
             ),
             modifier = Modifier.padding(bottom = 32.dp)
         )
-        OutlinedTextField(
+        TextFieldWithIcon(
             value = emailState.value,
             onValueChange = { emailState.value = it },
-            label = { Text("Email") },
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier.fillMaxWidth()
+            label = "Email",
+            icon = Icons.Filled.Mail,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(

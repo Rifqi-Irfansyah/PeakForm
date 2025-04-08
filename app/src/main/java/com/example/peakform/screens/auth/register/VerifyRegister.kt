@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,15 +24,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.peakform.navigation.Screens
-import com.example.peakform.viewmodel.auth.VMRegister
 import com.example.peakform.data.model.PopupStatus
+import com.example.peakform.navigation.Screens
+import com.example.peakform.ui.components.PasswordTextField
 import com.example.peakform.ui.components.Popup
+import com.example.peakform.ui.components.TextFieldWithIcon
+import com.example.peakform.viewmodel.auth.VMRegister
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -67,9 +70,7 @@ fun VerifyRegister(navController: NavController, viewModel: VMRegister = viewMod
 
             coroutineScope.launch {
                 delay(2000L)
-                navController.navigate(Screens.Auth.route) {
-                    popUpTo(Screens.Register.route) {inclusive = true}
-                }
+                navController.navigate(Screens.Auth.route)
             }
         }
         if (error != null) {
@@ -109,29 +110,24 @@ fun VerifyRegister(navController: NavController, viewModel: VMRegister = viewMod
             ),
             modifier = Modifier.padding(bottom = 32.dp)
         )
-        OutlinedTextField(
+        TextFieldWithIcon(
             value = otpState.value,
             onValueChange = { otpState.value = it },
-            label = { Text("OTP") },
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier.fillMaxWidth()
+            label = "OTP",
+            icon = Icons.Filled.Lock,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
+        TextFieldWithIcon(
             value = usernameState.value,
             onValueChange = { usernameState.value = it },
-            label = { Text("Username") },
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier.fillMaxWidth()
+            label = "Username",
+            icon = Icons.Filled.Person,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
+        PasswordTextField(
             value = passwordState.value,
             onValueChange = { passwordState.value = it },
-            label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier.fillMaxWidth()
+            label = "Password",
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
