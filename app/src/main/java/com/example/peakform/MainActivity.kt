@@ -76,9 +76,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         containerColor = MaterialTheme.colorScheme.background,
                         bottomBar = {
-                            if (startDestination.value == Screens.Home.route) {
-                                BottomNavBar(navController)
-                            }
+                            BottomNavBar(navController)
                         }
                     ) { paddingValues ->
                         AppNavHost(

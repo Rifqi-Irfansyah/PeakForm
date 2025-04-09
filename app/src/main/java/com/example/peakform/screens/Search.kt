@@ -5,20 +5,25 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.peakform.viewmodel.VMSearch
 import com.example.peakform.ui.components.CardExercise
+import com.example.peakform.ui.components.TextFieldWithIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,22 +64,24 @@ fun Search(navController: NavController? = null, viewModel: VMSearch = viewModel
             .padding(16.dp)
     ) {
         item {
+            val commonHeight = 56.dp
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                OutlinedTextField(
+                TextFieldWithIcon(
                     value = searchText,
                     onValueChange = { newText ->
                         searchText = newText
                         viewModel.applyFilters(name = newText)
                     },
-                    label = { Text("Search by Name") },
+                    label = "Search",
+                    icon = Icons.Default.Search,
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    enabled = !loading
+                        .weight(2f)
+                        .padding(end = 8.dp)
+                        .height(commonHeight)
                 )
 
                 Button(
@@ -85,14 +92,12 @@ fun Search(navController: NavController? = null, viewModel: VMSearch = viewModel
                         tempDifficultyFilter = difficultyFilter
                         showFilterModal = true
                     },
-                    modifier = Modifier.height(56.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
+                        .height(commonHeight)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Open Filters",
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                    Text("Open Filters")
+                    Text("Filters")
                 }
             }
 
@@ -304,16 +309,14 @@ fun Search(navController: NavController? = null, viewModel: VMSearch = viewModel
     }
 
     selectedExercise?.let { exercise ->
-        Log.d("ExerciseDetail", "Name: ${exercise.name}")
-        Log.d("ExerciseDetail", "Type: ${exercise.type}")
-        Log.d("ExerciseDetail", "Muscle: ${exercise.muscle}")
-        Log.d("ExerciseDetail", "Equipment: ${exercise.equipment}")
-        Log.d("ExerciseDetail", "Difficulty: ${exercise.difficulty}")
-        Log.d("ExerciseDetail", "Instructions: ${exercise.instructions}")
-        Log.d("ExerciseDetail", "Image: ${exercise.image}")
         AlertDialog(
             onDismissRequest = { viewModel.clearSelectedExercise() },
-            title = { Text(exercise.name ?: "Unknown Exercise") },
+            title = {
+                Text(
+                    text = exercise.name ?: "Unknown Exercise",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                )
+            },
             text = {
                 Column(
                     modifier = Modifier
@@ -322,7 +325,7 @@ fun Search(navController: NavController? = null, viewModel: VMSearch = viewModel
                 ) {
                     CardExercise(
                         imageUrl = exercise.image,
-                        title = exercise.name ?: "Unknown Exercise",
+                        title = "",
                         onClick = {}
                     )
                     Spacer(modifier = Modifier.height(8.dp))
