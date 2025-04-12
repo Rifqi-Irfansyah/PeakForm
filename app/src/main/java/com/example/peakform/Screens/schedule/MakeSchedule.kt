@@ -41,6 +41,7 @@ import com.example.peakform.R
 import com.example.peakform.viewmodel.VMMakeSchedule
 import com.example.peakform.screens.PopupState
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
+import com.example.peakform.viewmodel.VMUser
 import kotlinx.coroutines.delay
 
 @Composable
@@ -59,6 +60,9 @@ fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewM
     val isLoading by viewModel.loading.collectAsState()
     val isSuccess by viewModel.success.collectAsState()
     val errorMessage by viewModel.error.collectAsState()
+    val userViewModel: VMUser = viewModel()
+//    val user = userViewModel.user
+    val user = "115dd593-1f58-454f-bd25-318cfd2b4810"
 
     NavigationBarMediumTheme {
         Surface(
@@ -105,7 +109,7 @@ fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewM
                                     if (currentQuestionIndex < questions.lastIndex) {
                                         currentQuestionIndex++
                                     } else {
-                                        viewModel.makeSchedule(selectedAnswers)
+                                        viewModel.makeSchedule(selectedAnswers, user)
                                     }
                                 },
                             colors = CardDefaults.cardColors(containerColor = Color.LightGray),

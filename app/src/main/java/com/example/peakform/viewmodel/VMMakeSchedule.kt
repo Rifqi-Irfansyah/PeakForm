@@ -3,7 +3,9 @@ package com.example.peakform.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.peakform.api.ApiService
+import com.example.peakform.viewmodel.auth.VMLogin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,7 +21,7 @@ class VMMakeSchedule : ViewModel() {
     val error: StateFlow<String?> = _error
     var allSuccess = true
 
-    fun makeSchedule(answers: Map<Int, String>) {
+    fun makeSchedule(answers: Map<Int, String>, idUser:String) {
         val idExerciseType = mutableMapOf<String, List<Int>>()
         idExerciseType["ChestEasy"]     = listOf(125,165,166)
         idExerciseType["ChestHard"]     = listOf(167,168,169)
@@ -46,7 +48,7 @@ class VMMakeSchedule : ViewModel() {
             try {
                 val idExercises = mutableMapOf<Int,List<Int>>()
                 val requestBody = mutableMapOf<String, Any>()
-                requestBody["id_user"] = "115dd593-1f58-454f-bd25-318cfd2b4810"
+                requestBody["id_user"] = idUser
                 requestBody["id_exercise"] = 1
                 requestBody["day"] = 4
 
@@ -60,7 +62,7 @@ class VMMakeSchedule : ViewModel() {
                         idExercises[2] = idExerciseType["BackEasy"] as List<Int>
                         idExercises[3] = idExerciseType["Shoulder"] as List<Int> + idExerciseType["Traps"] as List<Int>
                         idExercises[5] = idExerciseType["BicepsEasy"] as List<Int> + idExerciseType["Forearms"] as List<Int>
-                        idExercises[6] = idExerciseType["Quadriceps"] as List<Int> + idExerciseType["CalvesEasy"] as List<Int> + idExerciseType["ABSEasy"] as List<Int>
+                        idExercises[7] = idExerciseType["Quadriceps"] as List<Int> + idExerciseType["CalvesEasy"] as List<Int> + idExerciseType["ABSEasy"] as List<Int>
                     }
                     else if (answers[1] == "1-2 times"){
                         requestBody["set"] = 4
