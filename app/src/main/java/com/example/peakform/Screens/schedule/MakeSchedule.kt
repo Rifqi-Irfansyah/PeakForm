@@ -61,7 +61,8 @@ fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewM
     val isSuccess by viewModel.success.collectAsState()
     val errorMessage by viewModel.error.collectAsState()
     val userViewModel: VMUser = viewModel()
-    val user = userViewModel.user
+//    val user = userViewModel.user
+    val user = "115dd593-1f58-454f-bd25-318cfd2b4810"
 
     NavigationBarMediumTheme {
         Surface(
@@ -108,7 +109,7 @@ fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewM
                                     if (currentQuestionIndex < questions.lastIndex) {
                                         currentQuestionIndex++
                                     } else {
-                                        viewModel.makeSchedule(selectedAnswers, user?.id.toString())
+                                        viewModel.makeSchedule(selectedAnswers, user)
                                     }
                                 },
                             colors = CardDefaults.cardColors(containerColor = Color.LightGray),
