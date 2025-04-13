@@ -3,7 +3,9 @@ package com.example.peakform.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.peakform.api.ApiService
+import com.example.peakform.viewmodel.auth.VMLogin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -60,7 +62,7 @@ class VMMakeSchedule : ViewModel() {
                         idExercises[2] = idExerciseType["BackEasy"] as List<Int>
                         idExercises[3] = idExerciseType["Shoulder"] as List<Int> + idExerciseType["Traps"] as List<Int>
                         idExercises[5] = idExerciseType["BicepsEasy"] as List<Int> + idExerciseType["Forearms"] as List<Int>
-                        idExercises[6] = idExerciseType["Quadriceps"] as List<Int> + idExerciseType["CalvesEasy"] as List<Int> + idExerciseType["ABSEasy"] as List<Int>
+                        idExercises[7] = idExerciseType["Quadriceps"] as List<Int> + idExerciseType["CalvesEasy"] as List<Int> + idExerciseType["ABSEasy"] as List<Int>
                     }
                     else if (answers[1] == "1-2 times"){
                         requestBody["set"] = 4
