@@ -3,6 +3,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -18,10 +19,18 @@ import com.example.peakform.R
 import com.example.peakform.viewmodel.VMHome
 import com.example.peakform.ui.components.CardImage
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
+import com.example.peakform.viewmodel.VMUser
 
 @Composable
-fun Home(navController: NavController, viewModel: VMHome = viewModel()){
+fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome = viewModel()){
     val schedule by viewModel.scheduleStatus.collectAsState()
+    val user = userViewModel.user
+
+    LaunchedEffect(user) {
+        user?.id?.let {
+            viewModel.setUserId(it)
+        }
+    }
 
     NavigationBarMediumTheme {
         Surface(
@@ -64,5 +73,9 @@ fun Home(navController: NavController, viewModel: VMHome = viewModel()){
 @Composable
 @Preview
 fun Preview(){
-    Home(navController = rememberNavController())
+    Home(
+        navController = rememberNavController(),
+        userViewModel = TODO(),
+        viewModel = TODO()
+    )
 }

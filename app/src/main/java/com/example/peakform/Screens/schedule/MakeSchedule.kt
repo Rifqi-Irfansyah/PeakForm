@@ -41,10 +41,11 @@ import com.example.peakform.R
 import com.example.peakform.viewmodel.VMMakeSchedule
 import com.example.peakform.screens.PopupState
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
+import com.example.peakform.viewmodel.VMUser
 import kotlinx.coroutines.delay
 
 @Composable
-fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewModel()){
+fun MakeSchedule(navController: NavController, userViewModel: VMUser,viewModel: VMMakeSchedule = viewModel()){
     val questions = listOf(
         "What is your goal?" to listOf("Build Muscle", "Endurance"),
         "How many times do you exercise in a week?" to listOf("Never", "1-2 times", "3-7 times")
@@ -59,6 +60,7 @@ fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewM
     val isLoading by viewModel.loading.collectAsState()
     val isSuccess by viewModel.success.collectAsState()
     val errorMessage by viewModel.error.collectAsState()
+    val user = userViewModel.user
 
     NavigationBarMediumTheme {
         Surface(
@@ -105,7 +107,7 @@ fun MakeSchedule(navController: NavController, viewModel: VMMakeSchedule = viewM
                                     if (currentQuestionIndex < questions.lastIndex) {
                                         currentQuestionIndex++
                                     } else {
-                                        viewModel.makeSchedule(selectedAnswers)
+                                        viewModel.makeSchedule(selectedAnswers, user?.id ?: "")
                                     }
                                 },
                             colors = CardDefaults.cardColors(containerColor = Color.LightGray),

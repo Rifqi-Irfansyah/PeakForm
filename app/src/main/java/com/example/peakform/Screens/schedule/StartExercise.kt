@@ -1,6 +1,5 @@
 package com.example.peakform.screens.schedule
 
-import android.graphics.fonts.FontStyle
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,30 +33,35 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import coil.size.Size
 import com.example.peakform.api.ExerciseService
 import com.example.peakform.data.model.Exercises
-import com.example.peakform.data.model.Schedule
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
+import com.example.peakform.utils.PrefManager
 import com.example.peakform.viewmodel.VMShowSchedule
-import java.time.LocalDate
+import com.example.peakform.viewmodel.VMUser
 
 @Composable
-fun StartExercise(navController: NavController, viewModel : VMShowSchedule){
+fun StartExercise(navController: NavController, userViewModel: VMUser,viewModel : VMShowSchedule){
     val selectedScheduleState = viewModel.selectedSchedule.collectAsState()
     val schedule = selectedScheduleState.value
     var currentIndex by remember { mutableStateOf(0) }
     var rest by remember { mutableStateOf(false) }
+    val user = userViewModel.user
+    val prefManager = PrefManager(LocalContext.current)
+
+    LaunchedEffect(user) {
+        user?.id?.let {
+            viewModel.setUserId(it)
+        }
+    }
 
     NavigationBarMediumTheme {
         Surface(
@@ -71,7 +74,8 @@ fun StartExercise(navController: NavController, viewModel : VMShowSchedule){
                     onNext = {
                         currentIndex++
                         rest = true
-                    }
+                    },
+                    viewModel = viewModel
                 )
             }
             else if (schedule != null && currentIndex < schedule.exercise.size && rest){
@@ -84,6 +88,7 @@ fun StartExercise(navController: NavController, viewModel : VMShowSchedule){
             }
             else{
                 LaunchedEffect(Unit) {
+                    prefManager.setExerciseDone()
                     navController.popBackStack()
                 }
             }
@@ -92,7 +97,7 @@ fun StartExercise(navController: NavController, viewModel : VMShowSchedule){
 }
 
 @Composable
-fun DoingExercise(exercises: Exercises, onNext: () -> Unit){
+fun DoingExercise(exercises: Exercises, onNext: () -> Unit, viewModel: VMShowSchedule) {
     val context = LocalContext.current
 
     val imageLoader = ImageLoader.Builder(context)
@@ -199,7 +204,12 @@ fun DoingExercise(exercises: Exercises, onNext: () -> Unit){
                         modifier = Modifier
                             .width(200.dp)
                             .height(50.dp),
-                        onClick = {onNext()}
+                        onClick = {
+                            viewModel.createLog(
+                                exercises
+                            )
+                            onNext()
+                        }
                     ) {
                         Text(
                             text = "FINISH",

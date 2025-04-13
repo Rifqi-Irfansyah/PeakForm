@@ -19,7 +19,7 @@ class VMMakeSchedule : ViewModel() {
     val error: StateFlow<String?> = _error
     var allSuccess = true
 
-    fun makeSchedule(answers: Map<Int, String>) {
+    fun makeSchedule(answers: Map<Int, String>, idUser: String) {
         val idExerciseType = mutableMapOf<String, List<Int>>()
         idExerciseType["ChestEasy"]     = listOf(125,165,166)
         idExerciseType["ChestHard"]     = listOf(167,168,169)
@@ -46,7 +46,7 @@ class VMMakeSchedule : ViewModel() {
             try {
                 val idExercises = mutableMapOf<Int,List<Int>>()
                 val requestBody = mutableMapOf<String, Any>()
-                requestBody["id_user"] = "115dd593-1f58-454f-bd25-318cfd2b4810"
+                requestBody["id_user"] = idUser
                 requestBody["id_exercise"] = 1
                 requestBody["day"] = 4
 

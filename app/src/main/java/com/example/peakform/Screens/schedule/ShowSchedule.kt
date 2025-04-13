@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,12 +39,21 @@ import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.getDayName
 import com.example.peakform.navigation.Screens
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
+import com.example.peakform.viewmodel.VMUser
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShowSchedule(navController: NavController, vmShowSchedule: VMShowSchedule = viewModel()){
+fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSchedule: VMShowSchedule = viewModel()){
     val schedules by vmShowSchedule.schedule.collectAsState()
+    val user = userViewModel.user
+
+    LaunchedEffect(user) {
+        user?.id?.let {
+            vmShowSchedule.setUserId(it)
+        }
+    }
+
 
     NavigationBarMediumTheme {
         Surface(
@@ -143,6 +153,10 @@ fun ScheduleItem(schedule: Schedule, navController: NavController, vmShowSchedul
 @Composable
 @Preview
 fun PreviewShowSchedule(){
-    ShowSchedule(navController = rememberNavController())
+    ShowSchedule(
+        navController = rememberNavController(),
+        userViewModel = TODO(),
+        vmShowSchedule = TODO()
+    )
 //    MakeSchedule(navController = rememberNavController(), viewModel = viewModel())
 }

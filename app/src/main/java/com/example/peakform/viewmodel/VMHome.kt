@@ -14,16 +14,27 @@ class VMHome : ViewModel(){
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    val idUser = "115dd593-1f58-454f-bd25-318cfd2b4810"
+    private val _idUser = MutableStateFlow<String?>(null)
+
+    fun setUserId(id: String) {
+        _idUser.value = id
+        fetchSchedule()
+    }
 
     init {
         fetchSchedule()
     }
 
     private fun fetchSchedule() {
+        val id = _idUser.value
+        if (id == null) {
+            _error.value = "User ID is null"
+            return
+        }
+
         viewModelScope.launch {
             try {
-                val apiResponse = ApiService.instance.getSchedule(idUser)
+                val apiResponse = ApiService.instance.getSchedule(id)
                 _scheduleStatus.value = apiResponse.isSuccessful
             } catch (e: Exception) {
                 Log.e("Error ethernet", "${e.message}")

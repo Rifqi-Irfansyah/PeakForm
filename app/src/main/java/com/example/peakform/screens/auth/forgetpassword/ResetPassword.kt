@@ -63,7 +63,7 @@ fun ResetPassword(navController: NavController, forgetPassViewModel: VMForgetPas
         if (success) {
             Popup(
                 status = PopupStatus.Success,
-                popupMessage = "Verification email sent!"
+                popupMessage = "Password reset successful! Please log in with your new password."
             )
 
             coroutineScope.launch {
