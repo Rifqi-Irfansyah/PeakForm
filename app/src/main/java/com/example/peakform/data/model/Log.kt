@@ -1,14 +1,28 @@
 package com.example.peakform.data.model
 
 import com.google.gson.annotations.SerializedName
-import java.security.Timestamp
 
 data class Log(
+    @SerializedName("ID")
     val id: Int,
-    val timestamp: Timestamp,
+    @SerializedName("UserID")
+    val userId: String,
+    @SerializedName("exerciseID")
+    val exerciseId: Int,
+    @SerializedName("Timestamp")
+    val timestamp: String,
+    @SerializedName("Exercise")
     val exercise: Exercise,
+    @SerializedName("Set")
     val set: Int,
+    @SerializedName("Repetition")
     val repetition: Int,
+)
+
+data class GetLogResponse(
+    val status: String,
+    val message: String,
+    val data: List<Log>
 )
 
 data class CreateLogRequest(

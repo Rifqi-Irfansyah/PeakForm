@@ -31,6 +31,13 @@ class PrefManager(context: Context) {
         }
     }
 
+    fun resetExercise() {
+        exercisePref.edit() {
+            putBoolean("EXERCISE_KEY", false)
+                .putString("LAST_EXERCISE_DATE", null)
+        }
+    }
+
     fun isHaveExercise(): Boolean {
         val lastDate = exercisePref.getString("LAST_EXERCISE_DATE", null)
         val today = sdf.format(Date())

@@ -37,6 +37,15 @@ android {
     buildFeatures {
         compose = true
     }
+    applicationVariants.all {
+        outputs.all {
+            val appName = "PeakForm"
+            val buildType = buildType.name
+            val versionName = versionName
+            val outputFileName = "$appName-$buildType-v$versionName.apk"
+            (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName = outputFileName
+        }
+    }
 }
 
 dependencies {
