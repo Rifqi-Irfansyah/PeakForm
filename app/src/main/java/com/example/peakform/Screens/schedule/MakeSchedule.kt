@@ -60,7 +60,6 @@ fun MakeSchedule(navController: NavController, userViewModel: VMUser,viewModel: 
     val isLoading by viewModel.loading.collectAsState()
     val isSuccess by viewModel.success.collectAsState()
     val errorMessage by viewModel.error.collectAsState()
-    val userViewModel: VMUser = viewModel()
     val user = userViewModel.user
 
     NavigationBarMediumTheme {

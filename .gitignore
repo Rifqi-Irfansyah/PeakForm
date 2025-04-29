@@ -12,4 +12,7 @@
 /captures
 .externalNativeBuild
 .cxx
+.kotlin
 local.properties
+app/src/main/java/com/example/peakform/api/const.kt
+app/src/main/res/xml/network_security_config.xml
