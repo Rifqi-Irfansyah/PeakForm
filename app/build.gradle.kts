@@ -57,7 +57,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+//    implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.common.android)
     implementation(libs.androidx.storage)
     testImplementation(libs.junit)
@@ -83,4 +83,6 @@ dependencies {
     implementation ("io.coil-kt:coil-svg:2.5.0")
     //Icon
     implementation ("androidx.compose.material:material-icons-extended:1.5.0")
+    //Material 3 for dropdown
+    implementation("androidx.compose.material3:material3:1.2.1")
 }

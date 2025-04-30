@@ -29,3 +29,11 @@ data class Exercises(
     val instructions: String,
     val image: String
 )
+
+data class ExerciseScheduleRequest(
+    val id: String,
+    val id_exercise: Int,
+    val new_id_exercise: Int,
+    val set: Int,
+    val repetition: Int
+)

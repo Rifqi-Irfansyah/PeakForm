@@ -6,33 +6,54 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
+import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.peakform.R
 import com.example.peakform.api.ExerciseService
+import com.example.peakform.data.model.Exercise
 import com.example.peakform.data.model.Exercises
+import com.example.peakform.viewmodel.VMSearch
+import android.util.Log
 import com.example.peakform.data.model.Schedule
+import com.example.peakform.viewmodel.VMUpdateSchedule
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun CardExerciseSchedule(
-    exercises: Exercises
+    schedule: Schedule,
+    exercise: Exercises,
 ) {
+    val viewModel: VMSearch = viewModel()
+    val viewModelExercise: VMUpdateSchedule = viewModel()
+    val exercises by viewModel.exercises.collectAsState()
+
     val context = LocalContext.current
+    var showEditDialog by remember { mutableStateOf(false) }
 
     val imageLoader = ImageLoader.Builder(context)
         .components {
@@ -45,7 +66,7 @@ fun CardExerciseSchedule(
             .fillMaxWidth()
             .height(120.dp)
             .clip(RoundedCornerShape(24.dp))
-            .clickable {  },
+            .clickable { },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -55,7 +76,7 @@ fun CardExerciseSchedule(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val fullImageUrl = exercises.image.let { "${ExerciseService.getBaseUrlForImages()}$it" }
+            val fullImageUrl = exercise.image.let { "${ExerciseService.getBaseUrlForImages()}$it" }
 
             val request = ImageRequest.Builder(context)
                 .data(fullImageUrl)
@@ -100,13 +121,13 @@ fun CardExerciseSchedule(
                 horizontalAlignment = Alignment.Start
             ){
                 Text(
-                    text = exercises.name,
+                    text = exercise.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color =  MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = exercises.set.toString() + " x " + exercises.repetition.toString() + " reps",
+                    text = exercise.set.toString() + " x " + exercise.repetition.toString() + " reps",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium,
                     color =  MaterialTheme.colorScheme.onSurfaceVariant,
@@ -118,9 +139,197 @@ fun CardExerciseSchedule(
                 modifier = Modifier
                     .size(20.dp)
                     .weight(0.5f)
-                    .clickable {  }
+                    .clickable { showEditDialog = true }
+            )
+        }
+    }
+
+    var currentExercise = exercise
+    var selectedIdExercise = currentExercise.id
+    var setUpdate = exercise.set
+    var repUpdate = exercise.repetition
+    if (showEditDialog) {
+        AlertDialog(
+            onDismissRequest = { showEditDialog = false },
+            title = {
+                Text(
+                    text = "Edit Exercise",
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            text = {
+
+                Column{
+                    DropdownExercise(
+                        exercises = exercises,
+                        selectedExercise = currentExercise,
+                        onExerciseSelected = { selected ->
+                             selectedIdExercise = selected.id
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    NumberInputField(
+                        label = "Sets",
+                        value = setUpdate,
+                        maxValue = 10,
+                        onValueChange = { setUpdate = it }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    NumberInputField(
+                        label = "Reps",
+                        value = repUpdate,
+                        maxValue = 100,
+                        onValueChange = { repUpdate = it }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.65f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                    onClick = {
+                        showEditDialog = false
+                        viewModelExercise.editExerciseSchedule(schedule.id, exercise.id, selectedIdExercise, setUpdate, repUpdate)
+                    }
+                ) {
+                    Text("Edit")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.3f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                    onClick = {
+                        showEditDialog = false
+//                        onEditReps()
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun NumberInputField(
+    label: String,
+    value: Int,
+    maxValue: Int,
+    onValueChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var currentValue by remember { mutableStateOf(value.toString()) }
+    var isError by remember { mutableStateOf(false) }
+
+    Column(modifier = modifier) {
+        OutlinedTextField(
+            shape = RoundedCornerShape(15.dp),
+            value = currentValue,
+            onValueChange = { newValue ->
+                if (newValue.isEmpty()) {
+                    currentValue = ""
+                    onValueChange(0)
+                    isError = false
+                    return@OutlinedTextField
+                }
+
+                val numericValue = newValue.toIntOrNull()
+                if (numericValue != null && numericValue >= 1 && numericValue <= maxValue) {
+                    currentValue = newValue
+                    onValueChange(numericValue)
+                    isError = false
+                } else {
+                    isError = true
+                }
+            },
+            label = { Text(label) },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            ),
+            isError = isError,
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                if (isError) {
+//                    Icon(
+//                        Icons.Default.Error,
+//                        contentDescription = "Error",
+//                        tint = MaterialTheme.colorScheme.error
+//                    )
+                }
+            }
+        )
+        if (isError) {
+            Text(
+                text = "Nilai harus antara 1-$maxValue",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
             )
         }
     }
 }
 
+@Composable
+fun ExerciseSelectionItem(
+    exercise: Exercise,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            }
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Exercise Image (optional)
+            AsyncImage(
+                model = "${ExerciseService.getBaseUrlForImages()}${exercise.image}",
+                contentDescription = null,
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = exercise.name,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = exercise.type,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Selected",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}

@@ -1,5 +1,6 @@
 package com.example.peakform.api
 
+import com.example.peakform.data.model.ExerciseScheduleRequest
 import com.example.peakform.data.model.ScheduleResponse
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.ResponseBody
@@ -19,7 +20,7 @@ interface ApiService {
     @GET("schedule")
     suspend fun getSchedule(@Query("UID") userId: String): Response<ScheduleResponse>
     @PUT("schedule/exercise")
-    suspend fun updateExerciseSchedule(@Body responseBody: MutableMap<String, Any>): Response<ResponseBody>
+    suspend fun updateExerciseSchedule(@Body requestBody: ExerciseScheduleRequest): Response<ResponseBody>
 
     companion object {
         val instance: ApiService by lazy {

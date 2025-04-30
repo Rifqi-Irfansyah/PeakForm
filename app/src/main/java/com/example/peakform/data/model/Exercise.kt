@@ -9,6 +9,8 @@ data class ApiResponse<T>(
 )
 
 data class Exercise(
+    @SerializedName("ID")
+    val id: Int,
     @SerializedName("Name")
     val name: String,
     @SerializedName("Type")

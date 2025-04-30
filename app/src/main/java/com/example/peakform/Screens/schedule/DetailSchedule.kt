@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.peakform.data.model.Exercises
+import com.example.peakform.data.model.Schedule
 import com.example.peakform.navigation.Screens
 import com.example.peakform.ui.components.CardExerciseSchedule
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
@@ -67,7 +68,7 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule){
                         .fillMaxSize()
                         .padding(bottom = 60.dp, top = 50.dp)
                     ) {
-                        ExerciseList(schedule.exercise)
+                        ExerciseList(schedule, schedule.exercise)
                     }
                 }
                 else {
@@ -122,7 +123,7 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule){
 }
 
 @Composable
-fun ExerciseList(exercises: List<Exercises>) {
+fun ExerciseList(schedule: Schedule, exercises: List<Exercises>) {
     LazyColumn (
         modifier = Modifier
             .padding(16.dp, 5.dp, 16.dp, 0.dp)
@@ -130,7 +131,7 @@ fun ExerciseList(exercises: List<Exercises>) {
         items(exercises.size) { index ->
             val exercise = exercises[index]
             CardExerciseSchedule(
-                exercise
+                schedule, exercise
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
