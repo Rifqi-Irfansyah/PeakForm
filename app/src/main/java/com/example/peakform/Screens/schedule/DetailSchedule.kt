@@ -38,6 +38,8 @@ import java.time.LocalDate
 fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule){
     val selectedScheduleState = viewModel.selectedSchedule.collectAsState()
     val schedule = selectedScheduleState.value
+    viewModel.updateSelectedSchedule(schedule?.id.toString())
+
     Log.d("debug", "Schedule updated: $schedule")
     val today = LocalDate.now().dayOfWeek.value // Monday = 1, Sunday = 7
     val isToday = schedule?.day == today

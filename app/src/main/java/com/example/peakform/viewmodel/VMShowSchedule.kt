@@ -31,11 +31,28 @@ class VMShowSchedule : ViewModel() {
     fun selectSchedule(schedule: Schedule) {
         _selectedSchedule.value = schedule
     }
-    fun updateSelectedSchedule(schedule: Schedule){
-        fetchSchedule()
-        val selectedId = schedule.id
-        val matched = _schedule.value?.schedules?.find { it.id == selectedId }
-        _selectedSchedule.value = matched
+
+    fun updateSelectedSchedule(scheduleId: String? = null){
+        viewModelScope.launch {
+            try {
+                fetchSchedule()
+                val selectedId = _selectedSchedule.value?.id ?: scheduleId
+                Log.d("updateSelectedSchedule", "Selected ID: $selectedId")
+                if (selectedId == null) {
+                    Log.e("updateSelectedSchedule", "Selected schedule ID is null and no fallback ID provided")
+                }
+                val matched = _schedule.value?.schedules?.find { it.id == selectedId }
+                if (matched == null) {
+                    Log.e("updateSelectedSchedule", "No schedule found with ID: $selectedId")
+                    _selectedSchedule.value = null
+                } else {
+                    Log.d("updateSelectedSchedule", "Matched schedule: $matched")
+                    _selectedSchedule.value = matched
+                }
+            } catch (e: Exception) {
+                Log.e("Error", "Failed to update selected schedule: ${e.message}")
+            }
+        }
     }
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
     init {

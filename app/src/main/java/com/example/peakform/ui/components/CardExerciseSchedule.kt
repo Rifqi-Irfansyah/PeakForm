@@ -1,15 +1,12 @@
 package com.example.peakform.ui.components
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,25 +26,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.peakform.R
 import com.example.peakform.api.ExerciseService
-import com.example.peakform.data.model.Exercise
 import com.example.peakform.data.model.Exercises
 import com.example.peakform.viewmodel.VMSearch
 import android.util.Log
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.navigation.Screens
 import com.example.peakform.screens.PopupState
 import com.example.peakform.viewmodel.VMUpdateSchedule
 import kotlinx.coroutines.delay
-import androidx.lifecycle.viewModelScope
 import com.example.peakform.viewmodel.VMShowSchedule
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -65,8 +58,8 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
         .components { add(SvgDecoder.Factory()) }.build()
 
     errorMessage?.let {
-        Popup(navController, schedule, isSuccess, it, isLoading)
-    } ?: Popup(navController, schedule, isSuccess, "", isLoading)
+        Popup(isSuccess, it, isLoading)
+    } ?: Popup(isSuccess, "", isLoading)
 
 
     Card(
@@ -199,6 +192,10 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
                     onClick = {
                         showEditDialog = false
                         viewModelExercise.editExerciseSchedule(schedule.id, exercise.id, selectedIdExercise, setUpdate, repUpdate)
+                        navController.navigate(Screens.DetailSchedule.route) {
+                            popUpTo(Screens.DetailSchedule.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
                 ) {
                     Text("Edit")
@@ -282,25 +279,16 @@ fun NumberInputField(
 }
 
 @Composable
-fun Popup(navController: NavController, schedule: Schedule, isSuccess: Boolean, isError: String, isLoading:Boolean){
+fun Popup(isSuccess: Boolean, isError: String, isLoading:Boolean){
     var showPopup by remember { mutableStateOf(true) }
     var viewModel: VMShowSchedule = viewModel()
     var scheduleState = viewModel.schedule.collectAsState()
-    var schedulea = viewModel.selectedSchedule.collectAsState()
     Log.d("sebelum", scheduleState.toString())
 
     LaunchedEffect(isSuccess) {
         showPopup = true
         if (isSuccess) {
-            viewModel.setUserId("115dd593-1f58-454f-bd25-318cfd2b4810")
-            delay(500)
-            viewModel.selectSchedule(schedule)
             delay(2000)
-            Log.d("sesudah", scheduleState.toString())
-            Log.d("sesudah", schedulea.toString())
-
-            navController.popBackStack()
-            navController.navigate(Screens.DetailSchedule.route)
         }
         if (isError != "") {
             delay(3000)
