@@ -36,8 +36,30 @@ class VMUpdateSchedule:ViewModel(){
                     _success.value = true
                 } else {
                     val errorMessage = apiResponse.errorBody()?.string() ?: "Unknown error"
-                    Log.e("Error ethernett", "${errorMessage}")
+                    Log.e("Error ethernet", errorMessage)
                     throw Exception("failed updated schedule: $errorMessage")
+                }
+            } catch (e: Exception) {
+                Log.e("Error ethernet", "${e.message}")
+                _error.value = e.message
+                allSuccess = false
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun deleteExerciseSchedule(idSchedule: Long, idExercise: Int){
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val apiResponse = ApiService.instance.deleteExerciseSchedule(idSchedule.toString(), idExercise.toString())
+                if (apiResponse.isSuccessful) {
+                    _success.value = true
+                } else {
+                    val errorMessage = apiResponse.errorBody()?.string() ?: "Unknown error"
+                    Log.e("Error ethernet", errorMessage)
+                    throw Exception("failed deleted schedule: $errorMessage")
                 }
             } catch (e: Exception) {
                 Log.e("Error ethernet", "${e.message}")

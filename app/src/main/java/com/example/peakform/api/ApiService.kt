@@ -8,6 +8,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -21,6 +22,11 @@ interface ApiService {
     suspend fun getSchedule(@Query("UID") userId: String): Response<ScheduleResponse>
     @PUT("schedule/exercise")
     suspend fun updateExerciseSchedule(@Body requestBody: ExerciseScheduleRequest): Response<ResponseBody>
+    @DELETE("schedule/exercise")
+    suspend fun deleteExerciseSchedule(
+        @Query("id_schedule") idSchedule:String,
+        @Query("id_exercise") idExercise:String)
+    : Response<ResponseBody>
 
     companion object {
         val instance: ApiService by lazy {

@@ -34,7 +34,11 @@ import com.example.peakform.api.ExerciseService
 import com.example.peakform.data.model.Exercises
 import com.example.peakform.viewmodel.VMSearch
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.navigation.Screens
@@ -54,12 +58,18 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
     val errorMessage by viewModelExercise.error.collectAsState()
     val context = LocalContext.current
     var showEditDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     val imageLoader = ImageLoader.Builder(context)
         .components { add(SvgDecoder.Factory()) }.build()
+    val fullImageUrl = exercise.image.let { "${ExerciseService.getBaseUrlForImages()}$it" }
+    val request = ImageRequest.Builder(context)
+        .data(fullImageUrl)
+        .crossfade(true)
+        .build()
 
     errorMessage?.let {
-        Popup(isSuccess, it, isLoading)
-    } ?: Popup(isSuccess, "", isLoading)
+        Popup(navController, isSuccess, it, isLoading)
+    } ?: Popup(navController, isSuccess, "", isLoading)
 
 
     Card(
@@ -77,13 +87,6 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val fullImageUrl = exercise.image.let { "${ExerciseService.getBaseUrlForImages()}$it" }
-
-            val request = ImageRequest.Builder(context)
-                .data(fullImageUrl)
-                .crossfade(true)
-                .build()
-
             SubcomposeAsyncImage(
                 model = request,
                 imageLoader = imageLoader,
@@ -134,14 +137,33 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
                     color =  MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Image(
-                painter = painterResource(id = R.drawable.icon_edit),
-                contentDescription = "Logo Vector",
+            Column (
                 modifier = Modifier
-                    .size(20.dp)
+                    .fillMaxHeight()
                     .weight(0.5f)
-                    .clickable { showEditDialog = true }
-            )
+                    .padding(start = 8.dp, top = 10.dp, bottom = 10.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.icon_edit),
+                    contentDescription = "Edit Icon",
+                    modifier = Modifier
+                        .size(20.dp)
+                        .weight(1f)
+                        .padding(bottom = 4.dp)
+                        .clickable { showEditDialog = true }
+                )
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Delete Icon",
+                    modifier = Modifier
+                        .size(20.dp)
+                        .weight(1f)
+                        .padding(top = 4.dp)
+                        .clickable { showDeleteDialog = true }
+                )
+            }
         }
     }
 
@@ -153,13 +175,19 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
         AlertDialog(
             onDismissRequest = { showEditDialog = false },
             title = {
-                Text(
-                    text = "Edit Exercise",
-                    style = MaterialTheme.typography.titleLarge
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Edit Exercise",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                }
             },
             text = {
-
                 Column{
                     DropdownExercise(
                         exercises = exercises,
@@ -192,10 +220,10 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
                     onClick = {
                         showEditDialog = false
                         viewModelExercise.editExerciseSchedule(schedule.id, exercise.id, selectedIdExercise, setUpdate, repUpdate)
-                        navController.navigate(Screens.DetailSchedule.route) {
-                            popUpTo(Screens.DetailSchedule.route) { inclusive = true }
-                            launchSingleTop = true
-                        }
+//                        navController.navigate(Screens.DetailSchedule.route) {
+//                            popUpTo(Screens.DetailSchedule.route) { inclusive = true }
+//                            launchSingleTop = true
+//                        }
                     }
                 ) {
                     Text("Edit")
@@ -208,7 +236,99 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
                     onClick = {
                         showEditDialog = false
-//                        onEditReps()
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Delete Exercise",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    SubcomposeAsyncImage(
+                        model = request,
+                        imageLoader = imageLoader,
+                        contentDescription = "Exercise Image",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .align(alignment = Alignment.CenterHorizontally)
+                            .height(150.dp),
+                        loading = {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.secondary)
+                            )
+                        },
+                        error = {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.errorContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Failed to load",
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier .height(10.dp))
+                    Text(
+                        text = "Are u sure want delete \n"+ exercise.name + "\nfrom exercise?",
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.65f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                    onClick = {
+                        showDeleteDialog = false
+                        viewModelExercise.deleteExerciseSchedule(schedule.id, exercise.id)
+//                        navController.navigate(Screens.DetailSchedule.route) {
+//                            popUpTo(Screens.DetailSchedule.route) { inclusive = true }
+//                            launchSingleTop = true
+//                        }
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.3f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                    onClick = {
+                        showDeleteDialog = false
                     }
                 ) {
                     Text("Cancel")
@@ -259,11 +379,11 @@ fun NumberInputField(
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 if (isError) {
-//                    Icon(
-//                        Icons.Default.Error,
-//                        contentDescription = "Error",
-//                        tint = MaterialTheme.colorScheme.error
-//                    )
+                    Icon(
+                        Icons.Default.Error,
+                        contentDescription = "Error",
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         )
@@ -279,7 +399,7 @@ fun NumberInputField(
 }
 
 @Composable
-fun Popup(isSuccess: Boolean, isError: String, isLoading:Boolean){
+fun Popup(navController: NavController, isSuccess: Boolean, isError: String, isLoading:Boolean){
     var showPopup by remember { mutableStateOf(true) }
     var viewModel: VMShowSchedule = viewModel()
     var scheduleState = viewModel.schedule.collectAsState()
@@ -289,9 +409,17 @@ fun Popup(isSuccess: Boolean, isError: String, isLoading:Boolean){
         showPopup = true
         if (isSuccess) {
             delay(2000)
+            navController.navigate(Screens.DetailSchedule.route) {
+                popUpTo(Screens.DetailSchedule.route) { inclusive = true }
+                launchSingleTop = true
+            }
         }
         if (isError != "") {
             delay(3000)
+            navController.navigate(Screens.DetailSchedule.route) {
+                popUpTo(Screens.DetailSchedule.route) { inclusive = true }
+                launchSingleTop = true
+            }
         }
         showPopup = false
     }
