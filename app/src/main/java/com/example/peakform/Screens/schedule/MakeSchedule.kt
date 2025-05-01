@@ -146,7 +146,7 @@ fun MakeSchedule(navController: NavController, userViewModel: VMUser,viewModel: 
 }
 
 @Composable
-fun Popup(navController: NavController, isSuccess: Boolean, isError: String, isLoading:Boolean){
+private fun Popup(navController: NavController, isSuccess: Boolean, isError: String, isLoading:Boolean){
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
             delay(2000)

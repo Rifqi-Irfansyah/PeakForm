@@ -220,10 +220,6 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
                     onClick = {
                         showEditDialog = false
                         viewModelExercise.editExerciseSchedule(schedule.id, exercise.id, selectedIdExercise, setUpdate, repUpdate)
-//                        navController.navigate(Screens.DetailSchedule.route) {
-//                            popUpTo(Screens.DetailSchedule.route) { inclusive = true }
-//                            launchSingleTop = true
-//                        }
                     }
                 ) {
                     Text("Edit")
@@ -397,9 +393,6 @@ fun NumberInputField(
 @Composable
 fun Popup(navController: NavController, isSuccess: Boolean, isError: String, isLoading:Boolean){
     var showPopup by remember { mutableStateOf(true) }
-    var viewModel: VMShowSchedule = viewModel()
-    var scheduleState = viewModel.schedule.collectAsState()
-    Log.d("sebelum", scheduleState.toString())
 
     LaunchedEffect(isSuccess) {
         showPopup = true

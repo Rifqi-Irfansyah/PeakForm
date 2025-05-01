@@ -40,6 +40,7 @@ class VMUpdateSchedule:ViewModel(){
                     Log.e("Error ethernet", errorMessage)
                     throw Exception("failed updated schedule: $errorMessage")
                 }
+
             } catch (e: Exception) {
                 Log.e("Error ethernet", "${e.message}")
                 _error.value = e.message
@@ -47,6 +48,38 @@ class VMUpdateSchedule:ViewModel(){
             } finally {
                 _loading.value = false
             }
+        }
+    }
+
+    fun addListExerciseSchedule(idUser: String, idExercise: List<Int>, day: Int, type:String, set: Int, rep: Int) {
+        viewModelScope.launch {
+                _loading.value = true
+                try {
+                    for (exerciseId in idExercise) {
+                        val requestBody = mutableMapOf<String, Any>(
+                            "id_user" to idUser,
+                            "id_exercise" to exerciseId,
+                            "day" to day,
+                            "set" to set,
+                            "repetition" to rep,
+                            "type" to type
+                        )
+                        val apiResponse = ApiService.instance.createSchedule(requestBody)
+                        if (apiResponse.isSuccessful) {
+                            _success.value = true
+                        } else {
+                            val errorMessage = apiResponse.errorBody()?.string() ?: "Unknown error"
+                            Log.e("Error ethernet", errorMessage)
+                            throw Exception("failed updated schedule: $errorMessage")
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("Error ethernet", "${e.message}")
+                    _error.value = e.message
+                    allSuccess = false
+                } finally {
+                    _loading.value = false
+                }
         }
     }
 
