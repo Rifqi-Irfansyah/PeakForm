@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peakform.data.model.ExerciseScheduleRequest
-import com.example.peakform.ui.components.ExerciseSelectionItem
 import kotlinx.coroutines.launch
 
 class VMUpdateSchedule:ViewModel(){

@@ -11,6 +11,7 @@ import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.ScheduleData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -30,7 +31,12 @@ class VMShowSchedule : ViewModel() {
     fun selectSchedule(schedule: Schedule) {
         _selectedSchedule.value = schedule
     }
-
+    fun updateSelectedSchedule(schedule: Schedule){
+        fetchSchedule()
+        val selectedId = schedule.id
+        val matched = _schedule.value?.schedules?.find { it.id == selectedId }
+        _selectedSchedule.value = matched
+    }
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
     init {
         sdf.timeZone = TimeZone.getTimeZone("UTC")
@@ -44,7 +50,7 @@ class VMShowSchedule : ViewModel() {
     }
 
     init {
-        fetchSchedule()
+//        fetchSchedule()
     }
 
     fun createLog(exercise: Exercises) {
@@ -70,7 +76,7 @@ class VMShowSchedule : ViewModel() {
         }
     }
 
-    private fun fetchSchedule() {
+    fun fetchSchedule() {
         viewModelScope.launch {
             try {
                 val apiResponse = ApiService.instance.getSchedule(_idUser.value ?: "")

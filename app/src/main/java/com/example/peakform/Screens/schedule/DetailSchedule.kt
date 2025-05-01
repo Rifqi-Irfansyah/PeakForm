@@ -1,6 +1,7 @@
 package com.example.peakform.screens.schedule
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import java.time.LocalDate
 fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule){
     val selectedScheduleState = viewModel.selectedSchedule.collectAsState()
     val schedule = selectedScheduleState.value
+    Log.d("debug", "Schedule updated: $schedule")
     val today = LocalDate.now().dayOfWeek.value // Monday = 1, Sunday = 7
     val isToday = schedule?.day == today
     val prefManager = com.example.peakform.utils.PrefManager(navController.context)
@@ -46,12 +48,6 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule){
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxSize().padding(15.dp)
-//                    .fillMaxHeight(),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//            )
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp)
@@ -68,11 +64,11 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule){
                         .fillMaxSize()
                         .padding(bottom = 60.dp, top = 50.dp)
                     ) {
-                        ExerciseList(schedule, schedule.exercise)
+                        ExerciseList(navController, schedule, schedule.exercise)
                     }
                 }
                 else {
-                    Text("Tidak ada jadwal yang dipilih.")
+                    Text("There are no Schedule Choosed")
                 }
 
                 if (isToday) {
@@ -123,16 +119,14 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule){
 }
 
 @Composable
-fun ExerciseList(schedule: Schedule, exercises: List<Exercises>) {
+fun ExerciseList(navController: NavController, schedule: Schedule, exercises: List<Exercises>) {
     LazyColumn (
         modifier = Modifier
             .padding(16.dp, 5.dp, 16.dp, 0.dp)
     ){
         items(exercises.size) { index ->
             val exercise = exercises[index]
-            CardExerciseSchedule(
-                schedule, exercise
-            )
+            CardExerciseSchedule(navController, schedule, exercise)
             Spacer(modifier = Modifier.height(12.dp))
         }
     }

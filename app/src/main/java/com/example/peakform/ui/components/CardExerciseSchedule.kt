@@ -1,6 +1,7 @@
 package com.example.peakform.ui.components
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,28 +39,35 @@ import com.example.peakform.data.model.Exercise
 import com.example.peakform.data.model.Exercises
 import com.example.peakform.viewmodel.VMSearch
 import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
 import com.example.peakform.data.model.Schedule
+import com.example.peakform.navigation.Screens
+import com.example.peakform.screens.PopupState
 import com.example.peakform.viewmodel.VMUpdateSchedule
+import kotlinx.coroutines.delay
+import androidx.lifecycle.viewModelScope
+import com.example.peakform.viewmodel.VMShowSchedule
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun CardExerciseSchedule(
-    schedule: Schedule,
-    exercise: Exercises,
-) {
+fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exercise: Exercises, ) {
     val viewModel: VMSearch = viewModel()
-    val viewModelExercise: VMUpdateSchedule = viewModel()
     val exercises by viewModel.exercises.collectAsState()
-
+    val viewModelExercise: VMUpdateSchedule = viewModel()
+    val isLoading by viewModelExercise.loading.collectAsState()
+    val isSuccess by viewModelExercise.success.collectAsState()
+    val errorMessage by viewModelExercise.error.collectAsState()
     val context = LocalContext.current
     var showEditDialog by remember { mutableStateOf(false) }
-
     val imageLoader = ImageLoader.Builder(context)
-        .components {
-            add(SvgDecoder.Factory())
-        }
-        .build()
+        .components { add(SvgDecoder.Factory()) }.build()
+
+    errorMessage?.let {
+        Popup(navController, schedule, isSuccess, it, isLoading)
+    } ?: Popup(navController, schedule, isSuccess, "", isLoading)
+
 
     Card(
         modifier = Modifier
@@ -274,62 +282,32 @@ fun NumberInputField(
 }
 
 @Composable
-fun ExerciseSelectionItem(
-    exercise: Exercise,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant
-            }
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Exercise Image (optional)
-            AsyncImage(
-                model = "${ExerciseService.getBaseUrlForImages()}${exercise.image}",
-                contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
+fun Popup(navController: NavController, schedule: Schedule, isSuccess: Boolean, isError: String, isLoading:Boolean){
+    var showPopup by remember { mutableStateOf(true) }
+    var viewModel: VMShowSchedule = viewModel()
+    var scheduleState = viewModel.schedule.collectAsState()
+    var schedulea = viewModel.selectedSchedule.collectAsState()
+    Log.d("sebelum", scheduleState.toString())
 
-            Spacer(modifier = Modifier.width(16.dp))
+    LaunchedEffect(isSuccess) {
+        showPopup = true
+        if (isSuccess) {
+            viewModel.setUserId("115dd593-1f58-454f-bd25-318cfd2b4810")
+            delay(500)
+            viewModel.selectSchedule(schedule)
+            delay(2000)
+            Log.d("sesudah", scheduleState.toString())
+            Log.d("sesudah", schedulea.toString())
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = exercise.name,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = exercise.type,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            if (isSelected) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Selected",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+            navController.popBackStack()
+            navController.navigate(Screens.DetailSchedule.route)
         }
+        if (isError != "") {
+            delay(3000)
+        }
+        showPopup = false
+    }
+    if(showPopup){
+        PopupState(isLoading, isSuccess, isError, "edit exercise")
     }
 }

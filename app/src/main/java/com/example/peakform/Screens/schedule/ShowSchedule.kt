@@ -54,7 +54,6 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
         }
     }
 
-
     NavigationBarMediumTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
