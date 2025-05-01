@@ -53,7 +53,7 @@ import kotlin.math.round
 @Composable
 fun DropdownExercise(
     exercises: List<Exercise>,
-    selectedExercise: Exercises,
+    selectedExercise: Exercises?,
     onExerciseSelected: (Exercise) -> Unit
 ) {
     var selectExercise by remember { mutableStateOf<Exercise?>(null) }
@@ -62,7 +62,7 @@ fun DropdownExercise(
     Box {
         OutlinedTextField(
             shape = RoundedCornerShape(15.dp),
-            value = selectExercise?.name ?: selectedExercise.name,
+            value = selectExercise?.name ?: selectedExercise?.name ?: "Choose Exercise",
             onValueChange = {},
             readOnly = true,
             label = { Text("Exercise") },

@@ -99,7 +99,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
             ShowSchedule(navController, VMUser,vmShowSchedule)
         }
         composable(Screens.DetailSchedule.route) {
-            DetailSchedule(navController, viewModel = vmShowSchedule)
+            DetailSchedule(navController, viewModel = vmShowSchedule, VMUser)
         }
         composable(Screens.StartExercise.route) {
             StartExercise(navController, VMUser,viewModel = vmShowSchedule)

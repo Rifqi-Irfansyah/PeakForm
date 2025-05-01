@@ -313,10 +313,6 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
                     onClick = {
                         showDeleteDialog = false
                         viewModelExercise.deleteExerciseSchedule(schedule.id, exercise.id)
-//                        navController.navigate(Screens.DetailSchedule.route) {
-//                            popUpTo(Screens.DetailSchedule.route) { inclusive = true }
-//                            launchSingleTop = true
-//                        }
                     }
                 ) {
                     Text("Delete")
@@ -424,6 +420,6 @@ fun Popup(navController: NavController, isSuccess: Boolean, isError: String, isL
         showPopup = false
     }
     if(showPopup){
-        PopupState(isLoading, isSuccess, isError, "edit exercise")
+        PopupState(isLoading, isSuccess, isError, "update schedule")
     }
 }

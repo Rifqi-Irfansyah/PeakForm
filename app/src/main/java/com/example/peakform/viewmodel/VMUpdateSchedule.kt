@@ -20,6 +20,36 @@ class VMUpdateSchedule:ViewModel(){
     val error: StateFlow<String?> = _error
     var allSuccess = true
 
+    fun addExerciseSchedule(idUser: String, idExercise: Int, day: Int, type:String, set: Int, rep: Int) {
+        viewModelScope.launch {
+            val requestBody = mutableMapOf<String, Any>(
+                "id_user" to idUser,
+                "id_exercise" to idExercise,
+                "day" to day,
+                "set" to set,
+                "repetition" to rep,
+                "type" to type
+            )
+            _loading.value = true
+            try {
+                val apiResponse = ApiService.instance.createSchedule(requestBody)
+                if (apiResponse.isSuccessful) {
+                    _success.value = true
+                } else {
+                    val errorMessage = apiResponse.errorBody()?.string() ?: "Unknown error"
+                    Log.e("Error ethernet", errorMessage)
+                    throw Exception("failed updated schedule: $errorMessage")
+                }
+            } catch (e: Exception) {
+                Log.e("Error ethernet", "${e.message}")
+                _error.value = e.message
+                allSuccess = false
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
     fun editExerciseSchedule(idSchedule: Long, idExercise: Int, newIdExercise: Int, set: Int, rep: Int) {
         viewModelScope.launch {
             val requestBody = ExerciseScheduleRequest(
