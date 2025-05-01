@@ -73,9 +73,11 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule, use
     val prefManager = com.example.peakform.utils.PrefManager(navController.context)
     var showAddDialog by remember { mutableStateOf(false) }
     var selectedIdExercise: Int? = null
-    var setUpdate: Int? = null
-    var repUpdate: Int? = null
+    var setUpdate by remember { mutableStateOf<Int?>(null) }
+    var repUpdate by remember { mutableStateOf<Int?>(null) }
     val user = userViewModel.user
+    var showWarningDialog by remember { mutableStateOf(false) }
+    val warningMessage by remember { mutableStateOf("Please Complete Data") }
 
     LaunchedEffect(user) {
         user?.id?.let {
@@ -210,14 +212,14 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule, use
                         Spacer(modifier = Modifier.height(8.dp))
                         NumberInputField(
                             label = "Sets",
-                            value = setUpdate ?: 1,
+                            value = setUpdate,
                             maxValue = 10,
                             onValueChange = { setUpdate = it }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         NumberInputField(
                             label = "Reps",
-                            value = repUpdate ?: 1,
+                            value = repUpdate,
                             maxValue = 100,
                             onValueChange = { repUpdate = it }
                         )
@@ -229,23 +231,25 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule, use
                             .fillMaxWidth(0.65f),
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                         onClick = {
-                            showAddDialog = false
-                            selectedIdExercise?.let {
-                                if (user != null) {
-                                    if (
-                                        setUpdate != null &&
-                                        repUpdate != null &&
-                                        schedule?.day != null
-                                    ) {
-                                        viewModelExercise.addExerciseSchedule(
-                                            user.id,
-                                            selectedIdExercise!!,
-                                            schedule.day,
-                                            schedule.type,
-                                            setUpdate!!,
-                                            repUpdate!!
-                                        )
-                                    }
+                            if (user != null) {
+                                if (
+                                    setUpdate != null &&
+                                    repUpdate != null &&
+                                    schedule?.day != null &&
+                                    selectedIdExercise != null
+                                ) {
+                                    showAddDialog = false
+                                    viewModelExercise.addExerciseSchedule(
+                                        user.id,
+                                        selectedIdExercise!!,
+                                        schedule.day,
+                                        schedule.type,
+                                        setUpdate!!,
+                                        repUpdate!!
+                                    )
+                                }
+                                else{
+                                    showWarningDialog = true
                                 }
                             }
                         }
@@ -263,6 +267,32 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule, use
                         }
                     ) {
                         Text("Cancel")
+                    }
+                }
+            )
+        }
+
+        if (showWarningDialog) {
+            AlertDialog(
+                onDismissRequest = { showWarningDialog = false },
+                title = {Text(
+                    text = "Warning",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )},
+                text = { Text(text = warningMessage) },
+                confirmButton = {
+                    TextButton(
+                        onClick = { showWarningDialog = false },
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(15.dp))
+                            .background(MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(
+                            text = "OK",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
             )

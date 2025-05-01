@@ -74,8 +74,8 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
     val exercises by vmSearch.exercises.collectAsState()
     val user = userViewModel.user
     var showAddDialog by remember { mutableStateOf(false) }
-    var setUpdate by remember { mutableStateOf<Int?>(1) }
-    var repUpdate by remember { mutableStateOf<Int?>(1) }
+    var setUpdate by remember { mutableStateOf<Int?>(null) }
+    var repUpdate by remember { mutableStateOf<Int?>(null) }
     var dayUpdate by remember { mutableStateOf<Int?>(null) }
     var typeUpdate by remember { mutableStateOf<String?>(null) }
     var showWarningDialog by remember { mutableStateOf(false) }
@@ -183,13 +183,6 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                 },
                 text = {
                     Column{
-//                        DropdownExercise(
-//                            exercises = exercises,
-//                            selectedExercise = null,
-//                            onExerciseSelected = { selected ->
-//                                selectedIdExercise = selected.id
-//                            }
-//                        )
                         Dropdown(
                             title = "Day",
                             item = availableDayNames,
@@ -208,14 +201,14 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                         Spacer(modifier = Modifier.height(8.dp))
                         NumberInputField(
                             label = "Sets",
-                            value = setUpdate ?: 1,
+                            value = setUpdate,
                             maxValue = 10,
                             onValueChange = { setUpdate = it }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         NumberInputField(
                             label = "Reps",
-                            value = repUpdate ?: 1,
+                            value = repUpdate,
                             maxValue = 100,
                             onValueChange = { repUpdate = it }
                         )
@@ -262,11 +255,16 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                         onClick = {
                             scope.launch {
-                                showAddDialog = false
                                 val selectedExerciseIds = listExerciseUpdate.mapNotNull { index ->
                                     exercises.getOrNull(index - 1)?.id
                                 }
-                                if (user != null && dayUpdate != null && typeUpdate != null) {
+                                if (
+                                    user != null &&
+                                    dayUpdate != null &&
+                                    typeUpdate != null &&
+                                    setUpdate != null &&
+                                    repUpdate != null) {
+                                    showAddDialog = false
                                     viewModelExercise.addListExerciseSchedule(
                                         user.id,
                                         selectedExerciseIds,

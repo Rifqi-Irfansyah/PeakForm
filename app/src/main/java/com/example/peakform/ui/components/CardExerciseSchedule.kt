@@ -333,18 +333,21 @@ fun CardExerciseSchedule(navController: NavController, schedule: Schedule, exerc
 @Composable
 fun NumberInputField(
     label: String,
-    value: Int,
+    value: Int?,
     maxValue: Int,
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentValue by remember { mutableStateOf(value.toString()) }
+    if (value == null){
+        currentValue = ""
+    }
     var isError by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
         OutlinedTextField(
             shape = RoundedCornerShape(15.dp),
-            value = currentValue,
+            value = currentValue ?: "",
             onValueChange = { newValue ->
                 if (newValue.isEmpty()) {
                     currentValue = ""
