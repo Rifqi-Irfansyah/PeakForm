@@ -56,10 +56,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.getDayName
@@ -143,29 +139,31 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                         .fillMaxWidth()
                 ){
                     ButtonBack(navController)
-                    Row (
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .height(35.dp)
-                            .clip(shape = RoundedCornerShape(35.dp))
-                            .background(MaterialTheme.colorScheme.primary)
-                            .clickable{ showAddDialog = true }
-                    ){
-                        Icon(
-                            Icons.Filled.Add,
-                            contentDescription = "Error",
-                            tint = MaterialTheme.colorScheme.onPrimary,
+                    if(usedDays.size < 7) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
                             modifier = Modifier
-                                .padding(start = 15.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Schedule",
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier
-                                .padding(end = 15.dp)
-                        )
+                                .height(35.dp)
+                                .clip(shape = RoundedCornerShape(35.dp))
+                                .background(MaterialTheme.colorScheme.primary)
+                                .clickable { showAddDialog = true }
+                        ) {
+                            Icon(
+                                Icons.Filled.Add,
+                                contentDescription = "Error",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier
+                                    .padding(start = 15.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Schedule",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier
+                                    .padding(end = 15.dp)
+                            )
+                        }
                     }
                 }
                 user?.id?.let {
@@ -323,8 +321,8 @@ fun ScheduleList(schedules: List<Schedule>, navController: NavController, vmShow
         modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 50.dp)
     ){
-        items(schedules.size) { index ->
-            val schedule = schedules[index]
+        items(schedules.sortedBy { it.day }.size) { index ->
+            val schedule = schedules.sortedBy { it.day }[index]
             ScheduleItem(schedules, schedule, navController, vmShowSchedule, availableDayNames, dayNames, idUser)
         }
     }
@@ -418,41 +416,45 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: Na
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedButton(
-                        onClick = { showChangeDayPopup = true },
-                        shape = RoundedCornerShape(15.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = MaterialTheme.colorScheme.primary
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(55.dp)
-                    ) {
-                        Text(
-                            text = "Change Day",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                    if(usedDays.size < 7){
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedButton(
+                            onClick = { showChangeDayPopup = true },
+                            shape = RoundedCornerShape(15.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(55.dp)
+                        ) {
+                            Text(
+                                text = "Change Day",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedButton(
-                        onClick = { showSwitchDayPopup = true },
-                        shape = RoundedCornerShape(15.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = MaterialTheme.colorScheme.primary
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(55.dp)
-                    ) {
-                        Text(
-                            text = "Switch Schedule Days",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                    if(schedules.size > 1){
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedButton(
+                            onClick = { showSwitchDayPopup = true },
+                            shape = RoundedCornerShape(15.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(55.dp)
+                        ) {
+                            Text(
+                                text = "Switch Schedule Days",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedButton(
