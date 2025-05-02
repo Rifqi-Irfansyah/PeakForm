@@ -136,7 +136,22 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule, use
                     }
                 }
                 else {
-                    Text("There are no Schedule Choosed")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ){
+                        Text(
+                            text = "OOPS \n There no exercise \nin this schedule",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(top = 300.dp)
+                                .fillMaxHeight()
+                                .fillMaxSize()
+                        )
+                    }
                 }
 
                 if (isToday) {

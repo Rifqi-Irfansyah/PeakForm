@@ -127,6 +127,24 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+            if(usedDays.isEmpty()){
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ){
+                    Text(
+                        text = "OOPS \n You don't have schedule",
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(top = 300.dp)
+                            .fillMaxHeight()
+                            .fillMaxSize()
+                    )
+                }
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize().padding(15.dp)
