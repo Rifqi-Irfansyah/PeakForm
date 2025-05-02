@@ -15,18 +15,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ChangeCircle
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,6 +55,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.getDayName
@@ -57,7 +68,9 @@ import com.example.peakform.ui.components.ButtonBack
 import com.example.peakform.ui.components.Dropdown
 import com.example.peakform.ui.components.MultiSelectExercise
 import com.example.peakform.ui.components.NumberInputField
+import com.example.peakform.ui.components.WarningDialog
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
+import com.example.peakform.utils.ScheduleUtils
 import com.example.peakform.viewmodel.VMSearch
 import com.example.peakform.viewmodel.VMUpdateSchedule
 import com.example.peakform.viewmodel.VMUser
@@ -78,8 +91,7 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
     var repUpdate by remember { mutableStateOf<Int?>(null) }
     var dayUpdate by remember { mutableStateOf<Int?>(null) }
     var typeUpdate by remember { mutableStateOf<String?>(null) }
-    var showWarningDialog by remember { mutableStateOf(false) }
-    val warningMessage by remember { mutableStateOf("Please Complete Data") }
+    var showWarningPopup by remember { mutableStateOf(false) }
     var listExerciseUpdate by remember { mutableStateOf(setOf<Int>()) }
     var showSelectExercise by remember { mutableStateOf(false) }
     val selectedExercises = listExerciseUpdate.mapNotNull { index ->
@@ -160,7 +172,7 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                         )
                     }
                 }
-                ScheduleList(schedules?.schedules ?: emptyList(), navController, vmShowSchedule)
+                ScheduleList(schedules?.schedules ?: emptyList(), navController, vmShowSchedule, availableDayNames, dayNames, dayUpdate)
             }
 
         }
@@ -274,7 +286,7 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                                         repUpdate!!
                                     )
                                 } else {
-                                    showWarningDialog = true
+                                    showWarningPopup = true
                                 }
                             }
                         }
@@ -296,54 +308,48 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                 }
             )
         }
+    }
 
-        if (showWarningDialog) {
-            AlertDialog(
-                onDismissRequest = { showWarningDialog = false },
-                title = {Text(
-                    text = "Warning",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )},
-                text = { Text(text = warningMessage) },
-                confirmButton = {
-                    TextButton(
-                        onClick = { showWarningDialog = false },
-                        modifier = Modifier
-                            .clip(shape = RoundedCornerShape(15.dp))
-                            .background(MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text(
-                            text = "OK",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onPrimary)
-                    }
-                }
-            )
-        }
+    if (showWarningPopup){
+        WarningDialog(true, "Please Complete Data", { showWarningPopup = false })
+
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleList(schedules: List<Schedule>, navController: NavController, vmShowSchedule: VMShowSchedule) {
+fun ScheduleList(schedules: List<Schedule>, navController: NavController, vmShowSchedule: VMShowSchedule, availableDayNames:List<String>, dayNames:Map<Int, String>, dayUpdate:Int?) {
     LazyColumn (
         modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 50.dp)
     ){
         items(schedules.size) { index ->
             val schedule = schedules[index]
-            ScheduleItem(schedule, navController, vmShowSchedule)
+            ScheduleItem(schedules, schedule, navController, vmShowSchedule, availableDayNames, dayNames)
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleItem(schedule: Schedule, navController: NavController, vmShowSchedule: VMShowSchedule){
+fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: NavController, vmShowSchedule: VMShowSchedule, availableDayNames:List<String>, dayNames:Map<Int, String>) {
     val today = LocalDate.now().dayOfWeek.value // Monday = 1, Sunday = 7
     val isToday = schedule.day == today
+    var showDetailPopup by remember { mutableStateOf(false) }
+    var showChangeDayPopup by remember { mutableStateOf(false) }
+    var showSwitchDayPopup by remember { mutableStateOf(false) }
+    var showDeletePopup by remember { mutableStateOf(false) }
+    var dayChange by remember { mutableStateOf<Int?>(null) }
+    var dayFirst by remember { mutableStateOf<Int?>(null) }
+    var daySecond by remember { mutableStateOf<Int?>(null) }
+    val usedDays: MutableList<Int> = schedules.map { it.day }.toMutableList()
+    val availableDaysMap = dayNames.filterKeys { it !in usedDays }
+    var unavailableDaysMap = dayNames.filterKeys { it in usedDays }
+    var unavailableDayNames = unavailableDaysMap.values.toMutableList()
+    val viewModelExercise: VMUpdateSchedule = viewModel()
+    var showWarningPopup by remember { mutableStateOf(false) }
+    val itemsForFirstDropdown = unavailableDayNames.filter { it != unavailableDaysMap[daySecond] }
+    val itemsForSecondDropdown = unavailableDayNames.filter { it != unavailableDaysMap[dayFirst] }
 
     Box(
         modifier = Modifier
@@ -367,27 +373,255 @@ fun ScheduleItem(schedule: Schedule, navController: NavController, vmShowSchedul
                     MaterialTheme.colorScheme.primary
             )
         ) {
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .padding(20.dp)
-                    .fillMaxHeight()
-                    .fillMaxWidth()
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = getDayName(schedule.day),
-                    fontSize = 25.sp,
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = schedule.type,
-                    fontSize = 18.sp,
-                    color = Color.White,
+                Column(
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxHeight()
+                        .weight(1f)
+                ) {
+                    Text(
+                        text = getDayName(schedule.day),
+                        fontSize = 25.sp,
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = schedule.type,
+                        fontSize = 18.sp,
+                        color = Color.White,
+                    )
+                }
+                Icon(
+                    Icons.Filled.MoreVert,
+                    contentDescription = "Add",
+                    tint = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier
+                        .weight(0.2f)
+                        .fillMaxHeight()
+                        .clickable { showDetailPopup = true }
+                        .padding(15.dp)
                 )
             }
         }
+    }
+
+    if (showDetailPopup) {
+        AlertDialog(
+            onDismissRequest = { showDetailPopup = false },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { showChangeDayPopup = true },
+                        shape = RoundedCornerShape(15.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp)
+                    ) {
+                        Text(
+                            text = "Change Day",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { showSwitchDayPopup = true },
+                        shape = RoundedCornerShape(15.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp)
+                    ) {
+                        Text(
+                            text = "Switch Schedule Days",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { showDeletePopup = true },
+                        shape = RoundedCornerShape(15.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp)
+                    ) {
+                        Text(
+                            text = "Delete Schedule",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+            },
+            confirmButton = { },
+            dismissButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.3f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                    onClick = { showDetailPopup = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (showChangeDayPopup) {
+        AlertDialog(
+            onDismissRequest = { showDetailPopup = false },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Dropdown(
+                        title = "Day",
+                        item = availableDayNames,
+                        selectedItem = dayNames[dayChange],
+                        onItemSelected = { selectedName ->
+                            dayChange =
+                                availableDaysMap.filterValues { it == selectedName }.keys.first()
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.65f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                    onClick = {
+                        if (dayChange != null) {
+                            viewModelExercise.updateDay(schedule.id.toString(), dayChange!!)
+                        } else {
+                            showWarningPopup = true
+                        }
+                    },
+                ) {
+                    Text(
+                        text = "OK",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.3f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                    onClick = { showChangeDayPopup = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (showSwitchDayPopup) {
+        AlertDialog(
+            onDismissRequest = { showDetailPopup = false },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Switch Day Schedule",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Dropdown(
+                        title = "Day",
+                        item = itemsForFirstDropdown,
+                        selectedItem = dayNames[dayFirst],
+                        onItemSelected = { selectedName ->
+                            dayFirst =
+                                unavailableDaysMap.filterValues { it == selectedName }.keys.first()
+                        }
+                    )
+                    Icon(
+                        Icons.Filled.SwapVert,
+                        contentDescription = "Switch",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier
+                            .padding(5.dp)
+                    )
+                    Dropdown(
+                        title = "Day",
+                        item = itemsForSecondDropdown,
+                        selectedItem = dayNames[daySecond],
+                        onItemSelected = { selectedName ->
+                            daySecond =
+                                unavailableDaysMap.filterValues { it == selectedName }.keys.first()
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.65f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                    onClick = {
+                        if (dayFirst != null && daySecond != null) {
+                            viewModelExercise.switchDay(
+                                ScheduleUtils.findScheduleIdByDay(schedules, dayFirst!!).toString(),
+                                ScheduleUtils.findScheduleIdByDay(schedules, daySecond!!).toString(),
+                                dayFirst!!, daySecond!!
+                            )
+                        } else {
+                            showWarningPopup = true
+                        }
+                    },
+                ) {
+                    Text(
+                        text = "OK",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.3f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                    onClick = { showSwitchDayPopup = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (showWarningPopup){
+        WarningDialog(true, "Please Complete Data", { showWarningPopup = false })
     }
 }
 

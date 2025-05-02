@@ -1,5 +1,6 @@
 package com.example.peakform.api
 
+import com.example.peakform.data.model.ChangeScheduleRequest
 import com.example.peakform.data.model.ExerciseScheduleRequest
 import com.example.peakform.data.model.ScheduleResponse
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -20,6 +21,8 @@ interface ApiService {
     suspend fun createSchedule(@Body responseBody: MutableMap<String, Any>): Response<ResponseBody>
     @GET("schedule")
     suspend fun getSchedule(@Query("UID") userId: String): Response<ScheduleResponse>
+    @PUT("schedule")
+    suspend fun updateDaySchedule(@Body requestBody: ChangeScheduleRequest): Response<ResponseBody>
     @PUT("schedule/exercise")
     suspend fun updateExerciseSchedule(@Body requestBody: ExerciseScheduleRequest): Response<ResponseBody>
     @DELETE("schedule/exercise")

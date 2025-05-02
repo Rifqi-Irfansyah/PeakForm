@@ -112,7 +112,7 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule, use
                     ){
                         Icon(
                             Icons.Filled.Add,
-                            contentDescription = "Error",
+                            contentDescription = "Add",
                             tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier
                                 .padding(start = 15.dp)

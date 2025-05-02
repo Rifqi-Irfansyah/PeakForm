@@ -37,3 +37,8 @@ data class ExerciseScheduleRequest(
     val set: Int,
     val repetition: Int
 )
+
+data class ChangeScheduleRequest(
+    val id: String,
+    val day: Int
+)
