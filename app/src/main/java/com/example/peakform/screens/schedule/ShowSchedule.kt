@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.ChangeCircle
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -111,11 +112,6 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
     errorMessage?.let {
         Popup(navController, isSuccess, it, isLoading)
     } ?: Popup(navController, isSuccess, "", isLoading)
-    LaunchedEffect(user) {
-        user?.id?.let {
-            vmShowSchedule.setUserId(it)
-        }
-    }
 
     val dayNames = mapOf(
         1 to "Monday",
@@ -172,7 +168,11 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                         )
                     }
                 }
-                ScheduleList(schedules?.schedules ?: emptyList(), navController, vmShowSchedule, availableDayNames, dayNames, dayUpdate)
+                user?.id?.let {
+                    ScheduleList(schedules?.schedules ?: emptyList(), navController, vmShowSchedule, availableDayNames, dayNames,
+                        it
+                    )
+                }
             }
 
         }
@@ -318,21 +318,21 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleList(schedules: List<Schedule>, navController: NavController, vmShowSchedule: VMShowSchedule, availableDayNames:List<String>, dayNames:Map<Int, String>, dayUpdate:Int?) {
+fun ScheduleList(schedules: List<Schedule>, navController: NavController, vmShowSchedule: VMShowSchedule, availableDayNames:List<String>, dayNames:Map<Int, String>, idUser:String) {
     LazyColumn (
         modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 50.dp)
     ){
         items(schedules.size) { index ->
             val schedule = schedules[index]
-            ScheduleItem(schedules, schedule, navController, vmShowSchedule, availableDayNames, dayNames)
+            ScheduleItem(schedules, schedule, navController, vmShowSchedule, availableDayNames, dayNames, idUser)
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: NavController, vmShowSchedule: VMShowSchedule, availableDayNames:List<String>, dayNames:Map<Int, String>) {
+fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: NavController, vmShowSchedule: VMShowSchedule, availableDayNames:List<String>, dayNames:Map<Int, String>, idUser: String) {
     val today = LocalDate.now().dayOfWeek.value // Monday = 1, Sunday = 7
     val isToday = schedule.day == today
     var showDetailPopup by remember { mutableStateOf(false) }
@@ -613,6 +613,66 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: Na
                         .fillMaxWidth(0.3f),
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
                     onClick = { showSwitchDayPopup = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (showDeletePopup) {
+        AlertDialog(
+            onDismissRequest = { showDetailPopup = false },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        Icons.Filled.WarningAmber,
+                        contentDescription = "warning",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .height(150.dp)
+                            .fillMaxWidth()
+                            .padding(start = 15.dp)
+                    )
+                    Spacer(Modifier.height(20.dp))
+                    Text(
+                        text = "Are u sure want \n delete this schedule?",
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = getDayName(schedule.day) + " | " + schedule.type,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.65f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                    onClick = { viewModelExercise.deleteScheudle(schedule.id.toString(), idUser)},
+                ) {
+                    Text(
+                        text = "OK",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(0.3f),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                    onClick = { showDeletePopup = false }
                 ) {
                     Text("Cancel")
                 }

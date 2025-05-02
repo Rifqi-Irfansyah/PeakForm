@@ -162,8 +162,31 @@ class VMUpdateSchedule:ViewModel(){
         }
     }
 
-    fun switchDay(firstIdSchedule: String, secondIdShedule:String, firstDay:Int, secondDay:Int){
+    fun switchDay(firstIdSchedule: String, secondIdSchedule:String, firstDay:Int, secondDay:Int){
         updateDay(firstIdSchedule, secondDay)
-        updateDay(secondIdShedule, firstDay)
+        updateDay(secondIdSchedule, firstDay)
+    }
+
+    fun deleteScheudle(idSchedule: String, idUser: String){
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val apiResponse = ApiService.instance.deleteSchedule(idSchedule, idUser)
+                if (apiResponse.isSuccessful) {
+                    _success.value = true
+                } else {
+                    val errorMessage = apiResponse.errorBody()?.string() ?: "Unknown error"
+                    Log.e("Error ethernet", errorMessage)
+                    throw Exception("failed deleted schedule: $errorMessage")
+                }
+
+            } catch (e: Exception) {
+                Log.e("Error ethernet", "${e.message}")
+                _error.value = e.message
+                allSuccess = false
+            } finally {
+                _loading.value = false
+            }
+        }
     }
 }

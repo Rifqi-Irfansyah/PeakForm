@@ -25,11 +25,16 @@ interface ApiService {
     suspend fun updateDaySchedule(@Body requestBody: ChangeScheduleRequest): Response<ResponseBody>
     @PUT("schedule/exercise")
     suspend fun updateExerciseSchedule(@Body requestBody: ExerciseScheduleRequest): Response<ResponseBody>
+    @DELETE("schedule")
+    suspend fun deleteSchedule(
+        @Query ("id_schedule") idSchedule:String,
+        @Query ("UID") idUser:String)
+        : Response<ResponseBody>
     @DELETE("schedule/exercise")
     suspend fun deleteExerciseSchedule(
         @Query("id_schedule") idSchedule:String,
         @Query("id_exercise") idExercise:String)
-    : Response<ResponseBody>
+        : Response<ResponseBody>
 
     companion object {
         val instance: ApiService by lazy {
