@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.peakform.screens.Home
 import com.example.peakform.screens.Search
+import com.example.peakform.screens.SplashScreen
 import com.example.peakform.screens.auth.Login
 import com.example.peakform.screens.auth.forgetpassword.ForgetPassword
 import com.example.peakform.screens.auth.forgetpassword.ResetPassword
@@ -103,6 +104,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
         }
         composable(Screens.StartExercise.route) {
             StartExercise(navController, VMUser,viewModel = vmShowSchedule)
+        }
+        composable(Screens.SplashScreen.route) {
+            SplashScreen(navController)
         }
     }
 }
