@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("kapt")
 }
 
 android {
@@ -86,4 +87,12 @@ dependencies {
     implementation ("androidx.compose.material:material-icons-extended:1.5.0")
     //Material 3 for dropdown
     implementation("androidx.compose.material3:material3:1.2.1")
+    // Room
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+    // WorkManager
+    implementation ("androidx.work:work-runtime-ktx:2.9.0")
+    // Notification
+    implementation("androidx.core:core-ktx:1.12.0")
 }

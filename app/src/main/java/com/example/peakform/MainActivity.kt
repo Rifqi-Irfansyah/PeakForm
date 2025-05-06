@@ -1,5 +1,9 @@
 package com.example.peakform
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.peakform.api.AuthService
@@ -28,6 +34,8 @@ import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import com.example.peakform.ui.theme.PeakFormTheme
 import com.example.peakform.utils.PrefManager
 import com.example.peakform.viewmodel.VMUser
+import android.Manifest
+import com.example.peakform.notification.scheduleDailyNotification
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -36,6 +44,9 @@ class MainActivity : ComponentActivity() {
 
         val prefManager = PrefManager(this)
         val token = prefManager.getToken()
+
+        createNotificationChannel()
+        checkNotificationPermissionIfNeeded()
 
         setContent {
             NavigationBarMediumTheme {
@@ -89,6 +100,46 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        scheduleDailyNotification(this)
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "daily_reminder_channel"
+            val name = "Daily Reminder"
+            val descriptionText = "Channel for daily notification"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+
+            val channel = NotificationChannel(channelId, name, importance).apply {
+                description = descriptionText
+            }
+
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun checkNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_NOTIFICATION_PERMISSION
+                )
+            }
+        }
+    }
+
+    companion object {
+        private const val REQUEST_NOTIFICATION_PERMISSION = 1001
     }
 }
 
