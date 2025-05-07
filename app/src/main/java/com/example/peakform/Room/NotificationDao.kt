@@ -20,4 +20,10 @@ interface NotificationDao {
 
     @Query("DELETE FROM notifications")
     suspend fun deleteAll()
+
+    @Query("UPDATE notifications SET hour = :hour, minute = :minute WHERE dayOfWeek = :day")
+    suspend fun updateNotificationByDay(day: Int, hour: Int, minute: Int)
+
+    @Query("DELETE FROM notifications WHERE dayOfWeek = :day")
+    suspend fun deleteByDay(day: Int)
 }

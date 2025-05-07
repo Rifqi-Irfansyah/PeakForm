@@ -97,13 +97,12 @@ fun Notification(navController: NavController, userViewModel: VMUser, vmShowSche
     val context = LocalContext.current
     val database = AppDatabase.getInstance(context)
     val vmNotification: VMNotification = viewModel(
-        factory = VMNotificationFactory(database.notificationDao())
+        factory = VMNotificationFactory(context, database.notificationDao())
     )
     val notifications by vmNotification.notifications.collectAsStateWithLifecycle()
     val notificationMap = notifications.associate { notification ->
         notification.dayOfWeek to listOf(notification.hour, notification.minute)
     }
-    Log.d("melly", notifications.toString())
 
     LaunchedEffect(user) {
         user?.id?.let {
@@ -148,7 +147,7 @@ fun Notification(navController: NavController, userViewModel: VMUser, vmShowSche
             ) {
                 ButtonBack(navController)
                 user?.id?.let {
-                    ScheduleList(schedules?.schedules ?: emptyList(), navController, vmShowSchedule, notificationMap)
+                    ScheduleList(schedules?.schedules ?: emptyList(), vmNotification, notificationMap)
                 }
             }
 
@@ -158,14 +157,14 @@ fun Notification(navController: NavController, userViewModel: VMUser, vmShowSche
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleList(schedules: List<Schedule>, navController: NavController, vmShowSchedule: VMShowSchedule, notificationMap: Map<Int, List<Int>>) {
+fun ScheduleList(schedules: List<Schedule>, vmNotification: VMNotification, notificationMap: Map<Int, List<Int>>) {
     LazyColumn (
         modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 50.dp)
     ){
         items(schedules.sortedBy { it.day }.size) { index ->
             val schedule = schedules.sortedBy { it.day }[index]
-            ScheduleItem(schedules, schedule, navController, vmShowSchedule, notificationMap)
+            ScheduleItem(schedules, schedule, vmNotification, notificationMap)
         }
     }
 }
@@ -173,7 +172,7 @@ fun ScheduleList(schedules: List<Schedule>, navController: NavController, vmShow
 @SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: NavController, vmShowSchedule: VMShowSchedule, notificationMap: Map<Int, List<Int>>) {
+fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, vmNotification: VMNotification, notificationMap: Map<Int, List<Int>>) {
     val today = LocalDate.now().dayOfWeek.value // Monday = 1, Sunday = 7
     val isToday = schedule.day == today
     var showEditPopup by remember { mutableStateOf(false) }
@@ -185,10 +184,15 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: Na
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     var time by remember { mutableStateOf("") }
+    var hour = notificationMap[schedule.day]?.getOrNull(0) ?: 0
+    var minute = notificationMap[schedule.day]?.getOrNull(1) ?: 0
+    val timeStart = String.format("%02d : %02d", hour, minute)
     val timePickerDialog = TimePickerDialog(
         context,
         R.style.RedTimePickerDialog,
-        { _: TimePicker, hourOfDay: Int, minute: Int ->
+        { _: TimePicker, hourOfDay: Int, minuteofHour: Int ->
+            hour = hourOfDay
+            minute = minuteofHour
             time = String.format("%02d:%02d", hourOfDay, minute)
         },
         calendar.get(Calendar.HOUR_OF_DAY),
@@ -233,9 +237,7 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: Na
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = notificationMap[schedule.day]?.getOrNull(0).toString() +
-                            " : " +
-                            notificationMap[schedule.day]?.getOrNull(1).toString(),
+                    text = timeStart,
                     fontSize = 25.sp,
                     textAlign = TextAlign.End,
                     color = Color.White,
@@ -262,9 +264,8 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: Na
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    time = String.format("%02d:%02d", notificationMap[schedule.day]?.getOrNull(0), notificationMap[schedule.day]?.getOrNull(1))
                     Text(
-                        text = time.ifEmpty { "Select Time" },
+                        text = time.ifEmpty{timeStart.ifEmpty { "Select Time" }},
                         modifier = Modifier
                             .clip(RoundedCornerShape(15.dp))
                             .fillMaxWidth()
@@ -281,7 +282,10 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: Na
                     modifier = Modifier
                         .fillMaxWidth(0.3f),
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-                    onClick = { showEditPopup = false }
+                    onClick = {
+                        showEditPopup = false
+                        vmNotification.updateNotificationByDay(schedule.day, hour, minute)
+                    }
                 ) {
                     Text("OK")
                 }
