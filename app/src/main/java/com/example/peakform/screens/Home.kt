@@ -59,7 +59,7 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                     backgroundRes = R.drawable.cardlist,
                     title = "LIST \nEXERCISE",
                     titleColor = Color.White,
-                    onClick = {}
+                    onClick = { }
                 )
 
                 if(schedule){
@@ -68,6 +68,13 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                         title = "YOUR\nSCHEDULE",
                         titleColor = Color.White,
                         onClick = { navController.navigate(Screens.ShowSchedule.route)}
+                    )
+
+                    CardImage(
+                        backgroundRes = R.drawable.cardnotification,
+                        title = "ADJUST\nNOTIFICATION",
+                        titleColor = Color.White,
+                        onClick = { navController.navigate(Screens.Notification.route)}
                     )
                 }
                 else{

@@ -23,4 +23,5 @@ sealed class Screens(val route : String) {
     object StartExercise: Screens("start_exercise_screen")
     object Search : Screens("search_screen")
     object SplashScreen : Screens("splash_screen")
+    object Notification : Screens("notification_screen")
 }

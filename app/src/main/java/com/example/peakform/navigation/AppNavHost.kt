@@ -11,11 +11,13 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.peakform.screens.Home
+import com.example.peakform.screens.Notification
 import com.example.peakform.screens.Search
 import com.example.peakform.screens.SplashScreen
 import com.example.peakform.screens.auth.Login
@@ -29,6 +31,7 @@ import com.example.peakform.screens.schedule.DetailSchedule
 import com.example.peakform.screens.schedule.MakeSchedule
 import com.example.peakform.screens.schedule.ShowSchedule
 import com.example.peakform.screens.schedule.StartExercise
+import com.example.peakform.viewmodel.VMNotification
 import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.viewmodel.VMUser
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -107,6 +110,10 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
         }
         composable(Screens.SplashScreen.route) {
             SplashScreen(navController)
+        }
+        composable(Screens.Notification.route){
+            vmShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
+            Notification(navController, VMUser,vmShowSchedule)
         }
     }
 }

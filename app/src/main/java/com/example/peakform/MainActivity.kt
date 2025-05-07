@@ -35,7 +35,10 @@ import com.example.peakform.ui.theme.PeakFormTheme
 import com.example.peakform.utils.PrefManager
 import com.example.peakform.viewmodel.VMUser
 import android.Manifest
+import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import com.example.peakform.notification.scheduleDailyNotification
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -68,7 +71,7 @@ class MainActivity : ComponentActivity() {
                             } else {
                                 prefManager.clearToken()
                             }
-                        } catch (_: Exception) {
+                        } catch (e: Exception) {
                             prefManager.clearToken()
                         }
                     }
@@ -101,7 +104,13 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        scheduleDailyNotification(this)
+        lifecycleScope.launch {
+            try {
+                scheduleDailyNotification(applicationContext)
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Error scheduling notification", e)
+            }
+        }
     }
 
     private fun createNotificationChannel() {

@@ -1,16 +1,19 @@
 package com.example.peakform.viewmodel
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.peakform.Room.AppDatabase
 import com.example.peakform.api.ApiService
-import com.example.peakform.viewmodel.auth.VMLogin
+import com.example.peakform.data.model.Notification
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
-class VMMakeSchedule : ViewModel() {
+class VMMakeSchedule(application: Application) : AndroidViewModel(application) {
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
@@ -145,12 +148,25 @@ class VMMakeSchedule : ViewModel() {
             }
         }
     }
+    private val context = getApplication<Application>().applicationContext
 
     private suspend fun insertData(
         idExercises: Map<Int, List<Int>>,
         requestBody: MutableMap<String, Any>
     ){
+        val db = AppDatabase.getInstance(context)
+        val dao = db.notificationDao()
+        dao.deleteAll()
         for((day, exerciseList) in idExercises){
+            val calendar = Calendar.getInstance()
+            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+            val minute = calendar.get(Calendar.MINUTE)
+            val dataNotification = Notification(
+                dayOfWeek = day,
+                hour = 15,
+                minute = 0
+            )
+            dao.insert(dataNotification)
             requestBody["day"] = day
             for (exerciseId in exerciseList) {
                 requestBody["id_exercise"] = exerciseId

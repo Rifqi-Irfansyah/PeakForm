@@ -1,0 +1,23 @@
+<resources>
+    <style name="RedTimePickerDialog" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Set the dialog background to a rounded card -->
+        <item name="android:dialogTheme">@style/RedDialogBackground</item>
+        <item name="android:timePickerDialogTheme">@style/RedTimePickerStyle</item>
+        <!-- Primary color for buttons and accents -->
+        <item name="colorPrimary">#8E1616</item>
+        <item name="colorPrimaryDark">#8E1616</item>
+        <item name="colorAccent">#8E1616</item>
+    </style>
+
+    <style name="RedDialogBackground">
+        <!-- Rounded corners for the dialog -->
+        <item name="android:background">@drawable/red_rounded_dialog</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="RedTimePickerStyle" parent="android:Widget.Material.TimePicker">
+        <!-- Customize time picker text and buttons -->
+        <item name="android:textColorPrimary">#8E1616</item>
+        <item name="android:textColorSecondary">#8E1616</item>
+    </style>
+</resources>
