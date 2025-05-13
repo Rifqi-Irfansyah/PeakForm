@@ -24,7 +24,7 @@ class VMMakeSchedule(application: Application) : AndroidViewModel(application) {
     val error: StateFlow<String?> = _error
     var allSuccess = true
 
-    fun makeSchedule(answers: Map<Int, String>, idUser: String) {
+    fun makeSchedule(answers: Map<Int, String>, idUser: String, hour: Int, minute: Int) {
         val idExerciseType = mutableMapOf<String, List<Int>>()
         idExerciseType["ChestEasy"]     = listOf(125,165,166)
         idExerciseType["ChestHard"]     = listOf(167,168,169)
@@ -85,7 +85,7 @@ class VMMakeSchedule(application: Application) : AndroidViewModel(application) {
                         idExercises[5] = idExerciseType["BicepsHard"] as List<Int> + idExerciseType["Forearms"] as List<Int>
                         idExercises[6] = idExerciseType["Quadriceps"] as List<Int> + idExerciseType["CalvesHard"] as List<Int> + idExerciseType["ABSHard"] as List<Int>
                     }
-                    insertData(idExercises, requestBody)
+                    insertData(idExercises, requestBody, hour, minute)
                 }
                 else{
                     // cardio repetition merepresentasikan waktu dalam detik
@@ -95,42 +95,42 @@ class VMMakeSchedule(application: Application) : AndroidViewModel(application) {
                         requestBody["repetition"] = 60
                         idExercises[2] = idExerciseType["Jumping"] as List<Int>
                         idExercises[6] = idExerciseType["Jumping"] as List<Int>
-                        insertData(idExercises, requestBody)
+                        insertData(idExercises, requestBody, hour, minute)
 
                         requestBody["set"] = 1
                         requestBody["repetition"] = 25*60
                         idExercises.clear()
                         idExercises[1] = idExerciseType["SlowJog"] as List<Int>
                         idExercises[5] = idExerciseType["SlowJog"] as List<Int>
-                        insertData(idExercises, requestBody)
+                        insertData(idExercises, requestBody, hour, minute)
                     }
                     else if (answers[1] == "1-2 times"){
                         requestBody["set"] = 2
                         requestBody["repetition"] = 45
                         idExercises[2] = idExerciseType["Jumping"] as List<Int>
                         idExercises[6] = idExerciseType["Jumping"] as List<Int>
-                        insertData(idExercises, requestBody)
+                        insertData(idExercises, requestBody, hour, minute)
 
                         requestBody["set"] = 1
                         requestBody["repetition"] = 15*60
                         idExercises.clear()
                         idExercises[1] = idExerciseType["SlowJog"] as List<Int>
                         idExercises[5] = idExerciseType["SlowJog"] as List<Int>
-                        insertData(idExercises, requestBody)
+                        insertData(idExercises, requestBody, hour, minute)
                     }
                     else{
                         requestBody["set"] = 2
                         requestBody["repetition"] = 30
                         idExercises[2] = idExerciseType["Jumping"] as List<Int>
                         idExercises[6] = idExerciseType["Jumping"] as List<Int>
-                        insertData(idExercises, requestBody)
+                        insertData(idExercises, requestBody, hour, minute)
 
                         requestBody["set"] = 1
                         requestBody["repetition"] = 10*60
                         idExercises.clear()
                         idExercises[1] = idExerciseType["SlowJog"] as List<Int>
                         idExercises[5] = idExerciseType["SlowJog"] as List<Int>
-                        insertData(idExercises, requestBody)
+                        insertData(idExercises, requestBody, hour, minute)
                     }
                 }
             }
@@ -152,19 +152,18 @@ class VMMakeSchedule(application: Application) : AndroidViewModel(application) {
 
     private suspend fun insertData(
         idExercises: Map<Int, List<Int>>,
-        requestBody: MutableMap<String, Any>
+        requestBody: MutableMap<String, Any>,
+        hour: Int,
+        minute: Int
     ){
         val db = AppDatabase.getInstance(context)
         val dao = db.notificationDao()
         dao.deleteAll()
         for((day, exerciseList) in idExercises){
-            val calendar = Calendar.getInstance()
-            val hour = calendar.get(Calendar.HOUR_OF_DAY)
-            val minute = calendar.get(Calendar.MINUTE)
             val dataNotification = Notification(
                 dayOfWeek = day,
-                hour = 15,
-                minute = 0
+                hour = hour,
+                minute = minute
             )
             dao.insert(dataNotification)
             requestBody["day"] = day

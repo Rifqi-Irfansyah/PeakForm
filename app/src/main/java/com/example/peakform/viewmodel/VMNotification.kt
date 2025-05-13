@@ -61,7 +61,7 @@ class VMNotification(private val context: Context, private val notificationDao: 
         }
     }
 
-    fun updateNotificationByDay(day: Int, hour: Int, minute: Int) {
+    fun updateNotificationByDay(day: Int, hour   : Int, minute: Int) {
         viewModelScope.launch {
             _loading.value = true
             try {
