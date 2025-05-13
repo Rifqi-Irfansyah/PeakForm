@@ -535,7 +535,7 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: Na
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                     onClick = {
                         if (dayChange != null) {
-                            viewModelExercise.updateDay(schedule.id.toString(), dayChange!!)
+                            viewModelExercise.updateDay(schedule.id.toString(), schedule.day, dayChange!!)
                         } else {
                             showWarningPopup = true
                         }

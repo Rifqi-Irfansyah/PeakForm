@@ -1,16 +1,19 @@
 package com.example.peakform.viewmodel
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import com.example.peakform.api.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.peakform.Room.AppDatabase
 import com.example.peakform.data.model.ChangeScheduleRequest
 import com.example.peakform.data.model.ExerciseScheduleRequest
 import kotlinx.coroutines.launch
 
-class VMUpdateSchedule:ViewModel(){
+class VMUpdateSchedule(application: Application) : AndroidViewModel(application){
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
@@ -134,12 +137,15 @@ class VMUpdateSchedule:ViewModel(){
             }
         }
     }
+    private val context = getApplication<Application>().applicationContext
 
-    fun updateDay(idSchedule: String, day: Int) {
+    fun updateDay(idSchedule: String, oldday:Int, newday: Int) {
+        val db = AppDatabase.getInstance(context)
+        val dao = db.notificationDao()
         viewModelScope.launch {
             val requestBody = ChangeScheduleRequest(
                 id = idSchedule,
-                day = day,
+                day = newday,
             )
             _loading.value = true
             try {
@@ -151,7 +157,9 @@ class VMUpdateSchedule:ViewModel(){
                     Log.e("Error ethernet", errorMessage)
                     throw Exception("failed updated schedule: $errorMessage")
                 }
-
+                if(oldday != 0){
+                    dao.updateDatNotification(newday, oldday)
+                }
             } catch (e: Exception) {
                 Log.e("Error ethernet", "${e.message}")
                 _error.value = e.message
@@ -163,8 +171,8 @@ class VMUpdateSchedule:ViewModel(){
     }
 
     fun switchDay(firstIdSchedule: String, secondIdSchedule:String, firstDay:Int, secondDay:Int){
-        updateDay(firstIdSchedule, secondDay)
-        updateDay(secondIdSchedule, firstDay)
+        updateDay(firstIdSchedule, 0, secondDay)
+        updateDay(secondIdSchedule, 0, firstDay)
     }
 
     fun deleteScheudle(idSchedule: String, idUser: String){
