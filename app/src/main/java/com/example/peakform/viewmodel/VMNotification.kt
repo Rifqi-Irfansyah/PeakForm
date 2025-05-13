@@ -20,6 +20,14 @@ import kotlinx.coroutines.launch
 class VMNotification(private val context: Context, private val notificationDao: NotificationDao) : ViewModel() {
     private val _notifications = MutableStateFlow<List<Notification>>(emptyList())
     val notifications: StateFlow<List<Notification>> = _notifications.asStateFlow()
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
+
+    private val _success = MutableStateFlow(false)
+    val success: StateFlow<Boolean> = _success
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
 
     init {
         Log.d("VMNotification", "ViewModel initialized")
@@ -55,10 +63,13 @@ class VMNotification(private val context: Context, private val notificationDao: 
 
     fun updateNotificationByDay(day: Int, hour: Int, minute: Int) {
         viewModelScope.launch {
+            _loading.value = true
             try {
                 notificationDao.updateNotificationByDay(day, hour, minute)
                 Log.d("VMNotification", "Updated notification for day: $day")
+                _success.value = true
             } catch (e: Exception) {
+                _error.value = e.message
                 Log.e("VMNotification", "Error updating notification: $e")
             }
         }

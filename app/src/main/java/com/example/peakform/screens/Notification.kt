@@ -20,17 +20,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,7 +34,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,14 +52,12 @@ import com.example.peakform.Room.AppDatabase
 import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.getDayName
-import com.example.peakform.navigation.Screens
 import com.example.peakform.ui.components.ButtonBack
 import com.example.peakform.ui.components.WarningDialog
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import com.example.peakform.viewmodel.VMNotification
 import com.example.peakform.viewmodel.VMNotificationFactory
 import com.example.peakform.viewmodel.VMSearch
-import com.example.peakform.viewmodel.VMUpdateSchedule
 import com.example.peakform.viewmodel.VMUser
 import kotlinx.coroutines.delay
 import java.time.LocalDate
@@ -76,24 +67,7 @@ import java.util.Calendar
 @Composable
 fun Notification(navController: NavController, userViewModel: VMUser, vmShowSchedule: VMShowSchedule = viewModel()){
     val schedules by vmShowSchedule.schedule.collectAsState()
-    val viewModelExercise: VMUpdateSchedule = viewModel()
-    val vmSearch: VMSearch = viewModel()
-    val exercises by vmSearch.exercises.collectAsState()
     val user = userViewModel.user
-    var showAddDialog by remember { mutableStateOf(false) }
-    var setUpdate by remember { mutableStateOf<Int?>(null) }
-    var repUpdate by remember { mutableStateOf<Int?>(null) }
-    var dayUpdate by remember { mutableStateOf<Int?>(null) }
-    var typeUpdate by remember { mutableStateOf<String?>(null) }
-    var showWarningPopup by remember { mutableStateOf(false) }
-    var listExerciseUpdate by remember { mutableStateOf(setOf<Int>()) }
-    var showSelectExercise by remember { mutableStateOf(false) }
-    val selectedExercises = listExerciseUpdate.mapNotNull { index ->
-        exercises.getOrNull(index - 1)
-    }
-    val isLoading by viewModelExercise.loading.collectAsState()
-    val isSuccess by viewModelExercise.success.collectAsState()
-    val errorMessage by viewModelExercise.error.collectAsState()
     val context = LocalContext.current
     val database = AppDatabase.getInstance(context)
     val vmNotification: VMNotification = viewModel(
@@ -109,10 +83,6 @@ fun Notification(navController: NavController, userViewModel: VMUser, vmShowSche
             vmShowSchedule.setUserId(it)
         }
     }
-
-    errorMessage?.let {
-        Popup(navController, isSuccess, it, isLoading)
-    } ?: Popup(navController, isSuccess, "", isLoading)
 
     val usedDays: List<Int> = schedules?.schedules?.map { it.day } ?: emptyList()
 
@@ -147,7 +117,7 @@ fun Notification(navController: NavController, userViewModel: VMUser, vmShowSche
             ) {
                 ButtonBack(navController)
                 user?.id?.let {
-                    ScheduleList(schedules?.schedules ?: emptyList(), vmNotification, notificationMap)
+                    NotificationList(schedules?.schedules ?: emptyList(), vmNotification, notificationMap)
                 }
             }
 
@@ -157,14 +127,14 @@ fun Notification(navController: NavController, userViewModel: VMUser, vmShowSche
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleList(schedules: List<Schedule>, vmNotification: VMNotification, notificationMap: Map<Int, List<Int>>) {
+fun NotificationList(schedules: List<Schedule>, vmNotification: VMNotification, notificationMap: Map<Int, List<Int>>) {
     LazyColumn (
         modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 50.dp)
     ){
         items(schedules.sortedBy { it.day }.size) { index ->
             val schedule = schedules.sortedBy { it.day }[index]
-            ScheduleItem(schedules, schedule, vmNotification, notificationMap)
+            NotificationItem(schedule, vmNotification, notificationMap)
         }
     }
 }
@@ -172,14 +142,10 @@ fun ScheduleList(schedules: List<Schedule>, vmNotification: VMNotification, noti
 @SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, vmNotification: VMNotification, notificationMap: Map<Int, List<Int>>) {
+fun NotificationItem(schedule: Schedule, vmNotification: VMNotification, notificationMap: Map<Int, List<Int>>) {
     val today = LocalDate.now().dayOfWeek.value // Monday = 1, Sunday = 7
     val isToday = schedule.day == today
     var showEditPopup by remember { mutableStateOf(false) }
-    var showChangeDayPopup by remember { mutableStateOf(false) }
-    var showSwitchDayPopup by remember { mutableStateOf(false) }
-    var showDeletePopup by remember { mutableStateOf(false) }
-    val usedDays: MutableList<Int> = schedules.map { it.day }.toMutableList()
     var showWarningPopup by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -199,6 +165,10 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, vmNotification: V
         calendar.get(Calendar.MINUTE),
         true
     )
+    val isLoading by vmNotification.loading.collectAsState()
+    val isSuccess by vmNotification.success.collectAsState()
+    val errorMessage by vmNotification.error.collectAsState()
+    var showPopupTrigger by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -285,6 +255,7 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, vmNotification: V
                     onClick = {
                         showEditPopup = false
                         vmNotification.updateNotificationByDay(schedule.day, hour, minute)
+                        showPopupTrigger = true
                     }
                 ) {
                     Text("OK")
@@ -306,43 +277,33 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, vmNotification: V
     if (showWarningPopup){
         WarningDialog(true, "Please Complete Data", { showWarningPopup = false })
     }
-}
 
-fun getDayName(dayNumber: Int): String {
-    val dayMap = mapOf(
-        1 to "Sunday",
-        2 to "Monday",
-        3 to "Tuesday",
-        4 to "Wednesday",
-        5 to "Thursday",
-        6 to "Friday",
-        7 to "Saturday" )
-    return dayMap[dayNumber] ?: "Invalid day number"
+    if (showPopupTrigger) {
+        Popup(
+            isSuccess = isSuccess,
+            isError = errorMessage ?: "",
+            isLoading = isLoading,
+            onPopupFinished = {
+                showPopupTrigger = false
+            }
+        )
+    }
 }
 
 @Composable
-private fun Popup(navController: NavController, isSuccess: Boolean, isError: String, isLoading:Boolean){
+private fun Popup(isSuccess: Boolean, isError: String, isLoading:Boolean, onPopupFinished: () -> Unit){
     var showPopup by remember { mutableStateOf(true) }
 
-    LaunchedEffect(isSuccess) {
-        showPopup = true
+    LaunchedEffect(Unit) {
         if (isSuccess) {
             delay(2000)
-            navController.navigate(Screens.ShowSchedule.route) {
-                popUpTo(Screens.ShowSchedule.route) { inclusive = true }
-                launchSingleTop = true
-            }
-        }
-        if (isError != "") {
+        } else if (isError.isNotEmpty()) {
             delay(3000)
-            navController.navigate(Screens.ShowSchedule.route) {
-                popUpTo(Screens.ShowSchedule.route) { inclusive = true }
-                launchSingleTop = true
-            }
         }
         showPopup = false
+        onPopupFinished()
     }
     if(showPopup){
-        PopupState(isLoading, isSuccess, isError, "Update schedule")
+        PopupState(isLoading, isSuccess, isError, "Update Notification")
     }
 }
