@@ -1,7 +1,6 @@
 package com.example.peakform.screens.schedule
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,26 +14,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ChangeCircle
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -678,7 +672,7 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: Na
                     modifier = Modifier
                         .fillMaxWidth(0.65f),
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                    onClick = { viewModelExercise.deleteScheudle(schedule.id.toString(), idUser)},
+                    onClick = { viewModelExercise.deleteSchedule(schedule.id.toString(), idUser, schedule.day)},
                 ) {
                     Text(
                         text = "OK",

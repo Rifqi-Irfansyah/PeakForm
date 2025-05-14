@@ -6,11 +6,11 @@ import androidx.lifecycle.AndroidViewModel
 import com.example.peakform.api.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peakform.Room.AppDatabase
 import com.example.peakform.data.model.ChangeScheduleRequest
 import com.example.peakform.data.model.ExerciseScheduleRequest
+import com.example.peakform.data.model.Notification
 import kotlinx.coroutines.launch
 
 class VMUpdateSchedule(application: Application) : AndroidViewModel(application){
@@ -23,6 +23,10 @@ class VMUpdateSchedule(application: Application) : AndroidViewModel(application)
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
     var allSuccess = true
+
+    private val context = getApplication<Application>().applicationContext
+    private val db = AppDatabase.getInstance(context)
+    private val dao = db.notificationDao()
 
     fun addExerciseSchedule(idUser: String, idExercise: Int, day: Int, type:String, set: Int, rep: Int) {
         viewModelScope.launch {
@@ -44,7 +48,6 @@ class VMUpdateSchedule(application: Application) : AndroidViewModel(application)
                     Log.e("Error ethernet", errorMessage)
                     throw Exception("failed updated schedule: $errorMessage")
                 }
-
             } catch (e: Exception) {
                 Log.e("Error ethernet", "${e.message}")
                 _error.value = e.message
@@ -77,6 +80,12 @@ class VMUpdateSchedule(application: Application) : AndroidViewModel(application)
                             throw Exception("failed updated schedule: $errorMessage")
                         }
                     }
+                    val notification = Notification(
+                        dayOfWeek = day,
+                        hour = 15,
+                        minute = 0
+                    )
+                    dao.insert(notification)
                 } catch (e: Exception) {
                     Log.e("Error ethernet", "${e.message}")
                     _error.value = e.message
@@ -137,11 +146,8 @@ class VMUpdateSchedule(application: Application) : AndroidViewModel(application)
             }
         }
     }
-    private val context = getApplication<Application>().applicationContext
 
     fun updateDay(idSchedule: String, oldday:Int, newday: Int) {
-        val db = AppDatabase.getInstance(context)
-        val dao = db.notificationDao()
         viewModelScope.launch {
             val requestBody = ChangeScheduleRequest(
                 id = idSchedule,
@@ -175,7 +181,7 @@ class VMUpdateSchedule(application: Application) : AndroidViewModel(application)
         updateDay(secondIdSchedule, 0, firstDay)
     }
 
-    fun deleteScheudle(idSchedule: String, idUser: String){
+    fun deleteSchedule(idSchedule: String, idUser: String, day:Int){
         viewModelScope.launch {
             _loading.value = true
             try {
@@ -187,7 +193,8 @@ class VMUpdateSchedule(application: Application) : AndroidViewModel(application)
                     Log.e("Error ethernet", errorMessage)
                     throw Exception("failed deleted schedule: $errorMessage")
                 }
-
+                val allBefore = dao.getAll()
+                dao.deleteByDay(day)
             } catch (e: Exception) {
                 Log.e("Error ethernet", "${e.message}")
                 _error.value = e.message
