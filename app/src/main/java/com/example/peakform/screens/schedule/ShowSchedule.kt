@@ -1,8 +1,11 @@
 package com.example.peakform.screens.schedule
 
+import android.app.TimePickerDialog
 import android.os.Build
+import android.widget.TimePicker
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,12 +47,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.peakform.R
 import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.getDayName
@@ -68,6 +73,7 @@ import com.example.peakform.viewmodel.VMUser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -92,7 +98,23 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
     val isSuccess by viewModelExercise.success.collectAsState()
     val errorMessage by viewModelExercise.error.collectAsState()
     val scope = rememberCoroutineScope()
-
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+    var time by remember { mutableStateOf("") }
+    var hour by remember { mutableStateOf(0) }
+    var minute by remember { mutableStateOf(0) }
+    val timePickerDialog = TimePickerDialog(
+        context,
+        R.style.RedTimePickerDialog,
+        { _: TimePicker, hourOfDay: Int, minuteofHour: Int ->
+            hour = hourOfDay
+            minute = minuteofHour
+            time = String.format("%02d:%02d", hourOfDay, minute)
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        true
+    )
     LaunchedEffect(user) {
         user?.id?.let {
             vmShowSchedule.setUserId(it)
@@ -235,6 +257,17 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                             onValueChange = { repUpdate = it }
                         )
                         Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = time.ifEmpty { "Select Time" },
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(15.dp))
+                                .fillMaxWidth()
+                                .height(55.dp)
+                                .clickable { timePickerDialog.show() }
+                                .border(1.dp, Color.Gray, RoundedCornerShape(15.dp))
+                                .padding(16.dp),
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
                         OutlinedButton(
                             onClick = { showSelectExercise = true },
                             shape = RoundedCornerShape(15.dp),
@@ -293,7 +326,9 @@ fun ShowSchedule(navController: NavController, userViewModel: VMUser,vmShowSched
                                         dayUpdate!!,
                                         typeUpdate!!,
                                         setUpdate!!,
-                                        repUpdate!!
+                                        repUpdate!!,
+                                        hour,
+                                        minute
                                     )
                                 } else {
                                     showWarningPopup = true
@@ -354,8 +389,8 @@ fun ScheduleItem(schedules:List<Schedule>, schedule: Schedule, navController: Na
     var daySecond by remember { mutableStateOf<Int?>(null) }
     val usedDays: MutableList<Int> = schedules.map { it.day }.toMutableList()
     val availableDaysMap = dayNames.filterKeys { it !in usedDays }
-    var unavailableDaysMap = dayNames.filterKeys { it in usedDays }
-    var unavailableDayNames = unavailableDaysMap.values.toMutableList()
+    val unavailableDaysMap = dayNames.filterKeys { it in usedDays }
+    val unavailableDayNames = unavailableDaysMap.values.toMutableList()
     val viewModelExercise: VMUpdateSchedule = viewModel()
     var showWarningPopup by remember { mutableStateOf(false) }
     val itemsForFirstDropdown = unavailableDayNames.filter { it != unavailableDaysMap[daySecond] }

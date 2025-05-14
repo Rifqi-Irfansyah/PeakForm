@@ -58,7 +58,7 @@ class VMUpdateSchedule(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun addListExerciseSchedule(idUser: String, idExercise: List<Int>, day: Int, type:String, set: Int, rep: Int) {
+    fun addListExerciseSchedule(idUser: String, idExercise: List<Int>, day: Int, type:String, set: Int, rep: Int, hour:Int, minute:Int) {
         viewModelScope.launch {
                 _loading.value = true
                 try {
@@ -82,8 +82,8 @@ class VMUpdateSchedule(application: Application) : AndroidViewModel(application)
                     }
                     val notification = Notification(
                         dayOfWeek = day,
-                        hour = 15,
-                        minute = 0
+                        hour = hour,
+                        minute = minute
                     )
                     dao.insert(notification)
                 } catch (e: Exception) {
