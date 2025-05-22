@@ -1,5 +1,6 @@
 package com.example.peakform.api
 
+import com.example.peakform.API.BASE_URL
 import com.example.peakform.data.model.CreateLogRequest
 import com.example.peakform.data.model.GenericResponse
 import com.example.peakform.data.model.GetLogResponse

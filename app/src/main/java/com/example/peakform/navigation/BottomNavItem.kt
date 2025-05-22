@@ -28,6 +28,11 @@ data class BottomNavItem(
                 icon = Icons.Filled.AccountCircle,
                 route = Screens.Profile.route
             ),
+            BottomNavItem(
+                label = "Leaderboard",
+                icon = Icons.Filled.AccountCircle,
+                route = Screens.Leaderboard.route
+            )
         )
     }
 }

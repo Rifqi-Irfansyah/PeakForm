@@ -1,5 +1,6 @@
 package com.example.peakform.api
 
+import com.example.peakform.API.BASE_URL
 import com.example.peakform.data.model.ApiResponse
 import com.example.peakform.data.model.Exercise
 import retrofit2.Response
