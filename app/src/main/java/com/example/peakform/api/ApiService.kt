@@ -1,6 +1,6 @@
 package com.example.peakform.api
 
-import com.example.peakform.API.BASE_URL
+import com.example.peakform.api.BASE_URL
 import com.example.peakform.data.model.ChangeScheduleRequest
 import com.example.peakform.data.model.ExerciseScheduleRequest
 import com.example.peakform.data.model.ScheduleResponse
