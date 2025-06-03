@@ -35,6 +35,19 @@ data class CreateLogRequest(
     val repetition: Int
 )
 
+data class LeaderboardResponse(
+    val status: String,
+    val message: String,
+    val data: List<UserLeaderboard>
+)
+
+data class UserLeaderboard(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("point")
+    val point: Int,
+)
+
 data class LogResponse(
     val status: String,
     val message: String,

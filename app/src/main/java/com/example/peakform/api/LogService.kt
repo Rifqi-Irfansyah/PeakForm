@@ -1,9 +1,9 @@
 package com.example.peakform.api
 
-import com.example.peakform.api.BASE_URL
 import com.example.peakform.data.model.CreateLogRequest
 import com.example.peakform.data.model.GenericResponse
 import com.example.peakform.data.model.GetLogResponse
+import com.example.peakform.data.model.LeaderboardResponse
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -17,8 +17,8 @@ interface LogService {
     @POST("logs/create")
     suspend fun createLog(@Body responseBody: CreateLogRequest): Response<GenericResponse>
 
-    @POST("/user/streak")
-
+    @GET("/leaderboard")
+    suspend fun getLeaderboard(): Response<LeaderboardResponse>
 
     @GET("/logs/{userId}")
     suspend fun getLog(

@@ -1,7 +1,6 @@
 package com.example.peakform.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -26,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
@@ -38,13 +35,21 @@ import coil.compose.AsyncImage
 import com.example.peakform.R
 import com.example.peakform.data.model.User
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.peakform.data.model.UserLeaderboard
+import com.example.peakform.viewmodel.VMLeaderboard
+
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Leaderboard(
-    navController: NavController
+    navController: NavController,
+    leaderboardViewModel: VMLeaderboard = viewModel()
 ) {
     val leaderboardData = listOf(
         User(
@@ -91,10 +96,15 @@ fun Leaderboard(
         )
     )
 
-    val loading = false
-    val success = true
-    val error: String? = null
+    val loading by leaderboardViewModel.loading.collectAsState()
+    val success by leaderboardViewModel.success.collectAsState()
+    val error by leaderboardViewModel.error.collectAsState()
+    val userLeaderboard by leaderboardViewModel.userLeaderboard.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        leaderboardViewModel.getLeaderboard()
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -128,14 +138,14 @@ fun Leaderboard(
             }
         }
 
-        itemsIndexed(leaderboardData) { index, user ->
+        itemsIndexed(userLeaderboard) { index, user ->
             LeaderboardCard(user = user, position = index + 1)
         }
     }
 }
 
 @Composable
-fun LeaderboardCard(user: User, position: Int) {
+fun LeaderboardCard(user: UserLeaderboard, position: Int) {
     val backgroundColor = when (position) {
         1 -> Color(0xFFFFD700) // Gold for 1st
         2 -> Color(0xFFC0C0C0) // Silver for 2nd
@@ -223,15 +233,15 @@ fun LeaderboardCard(user: User, position: Int) {
                     textAlign = TextAlign.Center
                 )
 
-                AsyncImage(
-                    model = "https://example.com/photo${user.id}.jpg",
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(imageSize)
-                        .clip(CircleShape)
-                        .border(borderWidth, borderColor, CircleShape),
-                    contentScale = ContentScale.Crop
-                )
+//                AsyncImage(
+//                    model = "https://example.com/photo${use.id}.jpg",
+//                    contentDescription = "Profile Picture",
+//                    modifier = Modifier
+//                        .size(imageSize)
+//                        .clip(CircleShape)
+//                        .border(borderWidth, borderColor, CircleShape),
+//                    contentScale = ContentScale.Crop
+//                )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
@@ -249,7 +259,7 @@ fun LeaderboardCard(user: User, position: Int) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${user.points} points",
+                    text = "${user.point} points",
                     style = TextStyle(
                         color = if (position <= 3) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.secondary,
                         fontSize = pointsFontSize,
