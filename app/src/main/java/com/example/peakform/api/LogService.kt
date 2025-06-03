@@ -25,6 +25,10 @@ interface LogService {
         @Path("userId") id: String,
     ): Response<GetLogResponse>
 
+    @GET("/logs/is-exercised-today/{userId}")
+    suspend fun isExercisedToday(
+        @Path("userId") id: String,
+    ): Response<GenericResponse>
 
     companion object {
         val instance: LogService by lazy {

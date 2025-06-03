@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 val VMUser: VMUser = viewModel()
 
                 val isLoading = remember { mutableStateOf(true) }
-                val startDestination = remember { mutableStateOf(Screens.SplashScreen.route) }
+                val startDestination = remember { mutableStateOf(Screens.Auth.route) }
 
                 LaunchedEffect(Unit) {
                     if (token != null) {

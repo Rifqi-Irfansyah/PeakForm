@@ -45,13 +45,6 @@ fun Profile(
     val coroutineScope = rememberCoroutineScope()
     val prefManager = PrefManager(navController.context)
 
-    LaunchedEffect(user) {
-        Log.d("Profile", "User: $user")
-        user?.id?.let {
-            profileViewModel.getLog(it)
-        }
-    }
-
     LazyColumn (
         modifier = Modifier
             .fillMaxSize()

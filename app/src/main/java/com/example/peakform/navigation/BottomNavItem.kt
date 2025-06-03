@@ -3,6 +3,7 @@ package com.example.peakform.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -30,7 +31,7 @@ data class BottomNavItem(
             ),
             BottomNavItem(
                 label = "Leaderboard",
-                icon = Icons.Filled.AccountCircle,
+                icon = Icons.Filled.Leaderboard,
                 route = Screens.Leaderboard.route
             )
         )
