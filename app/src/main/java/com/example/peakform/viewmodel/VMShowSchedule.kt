@@ -11,7 +11,6 @@ import com.example.peakform.data.model.Schedule
 import com.example.peakform.data.model.ScheduleData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -27,6 +26,9 @@ class VMShowSchedule : ViewModel() {
 
     private val _selectedSchedule = MutableStateFlow<Schedule?>(null)
     val selectedSchedule: StateFlow<Schedule?> = _selectedSchedule
+
+    private val _isExercisedToday = MutableStateFlow<Boolean?>(null)
+    val isExercisedToday: StateFlow<Boolean?> = _isExercisedToday
 
     fun selectSchedule(schedule: Schedule) {
         _selectedSchedule.value = schedule
@@ -86,6 +88,22 @@ class VMShowSchedule : ViewModel() {
                     Log.d("Log Created", "Log created successfully")
                 } else {
                     Log.e("Error", "Failed to create log: ${apiResponse.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("Error ethernet", "${e.message}")
+            }
+        }
+    }
+
+    fun isUserExercisedToday() {
+        viewModelScope.launch {
+            try {
+                val apiResponse = LogService.instance.isExercisedToday(_idUser.value ?: "")
+                if (apiResponse.isSuccessful) {
+                    Log.d("Is Exercised Today", "User has exercised today: ${apiResponse.body()?.data}")
+                    _isExercisedToday.value = apiResponse.body()?.data ?: false
+                } else {
+                    Log.e("Error", "Failed to check if user exercised today: ${apiResponse.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
                 Log.e("Error ethernet", "${e.message}")

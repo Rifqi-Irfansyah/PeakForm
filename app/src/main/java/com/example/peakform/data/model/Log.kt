@@ -19,12 +19,6 @@ data class Log(
     val repetition: Int,
 )
 
-data class GetLogResponse(
-    val status: String,
-    val message: String,
-    val data: List<Log>
-)
-
 data class CreateLogRequest(
     @SerializedName("user_id")
     val userId: String,
@@ -35,7 +29,21 @@ data class CreateLogRequest(
     val repetition: Int
 )
 
-data class LogResponse(
+data class LeaderboardResponse(
     val status: String,
     val message: String,
+    val data: List<UserLeaderboard>
+)
+
+data class UserLeaderboard(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("point")
+    val point: Int,
+)
+
+data class IsExercisedTodayResponse(
+    val status: String,
+    val message: String,
+    val data: Boolean
 )

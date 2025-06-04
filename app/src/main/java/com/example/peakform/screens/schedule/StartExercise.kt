@@ -44,7 +44,6 @@ import coil.request.ImageRequest
 import com.example.peakform.api.ExerciseService
 import com.example.peakform.data.model.Exercises
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
-import com.example.peakform.utils.PrefManager
 import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.viewmodel.VMUser
 
@@ -55,7 +54,6 @@ fun StartExercise(navController: NavController, userViewModel: VMUser,viewModel 
     var currentIndex by remember { mutableStateOf(0) }
     var rest by remember { mutableStateOf(false) }
     val user = userViewModel.user
-    val prefManager = PrefManager(LocalContext.current)
 
     LaunchedEffect(user) {
         user?.id?.let {
@@ -88,8 +86,7 @@ fun StartExercise(navController: NavController, userViewModel: VMUser,viewModel 
             }
             else{
                 if (schedule != null) {
-                    prefManager.setExerciseDone()
-                    FinishExercise(navController)
+                    FinishExercise(navController, userViewModel)
                 }
             }
         }

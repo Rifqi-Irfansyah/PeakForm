@@ -2,6 +2,7 @@ package com.example.peakform.navigation
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -13,11 +14,16 @@ fun BottomNavBar(navController: NavController) { // Ambil NavController dari lua
     val screensWithBottomBar = listOf(
         Screens.Home.route,
         Screens.Profile.route,
-        Screens.Search.route
+        Screens.Search.route,
+        Screens.Leaderboard.route,
     )
 
     if (currentDestination?.route in screensWithBottomBar) { // Hanya tampil di layar tertentu
-        NavigationBar {
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            tonalElevation = 8.dp,
+        ) {
             BottomNavItem().BottomNavItem().forEach { navigationItem ->
                 NavigationBarItem(
                     selected = navigationItem.route == currentDestination?.route,
@@ -36,9 +42,18 @@ fun BottomNavBar(navController: NavController) { // Ambil NavController dari lua
                             launchSingleTop = true
                             restoreState = true
                         }
-                    }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                        unselectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                        unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                        indicatorColor = MaterialTheme.colorScheme.secondary
+                    )
                 )
             }
         }
     }
 }
+
+

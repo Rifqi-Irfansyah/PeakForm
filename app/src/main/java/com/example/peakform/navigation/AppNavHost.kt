@@ -11,7 +11,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -31,8 +30,9 @@ import com.example.peakform.screens.profile.Profile
 import com.example.peakform.screens.schedule.DetailSchedule
 import com.example.peakform.screens.schedule.MakeSchedule
 import com.example.peakform.screens.schedule.ShowSchedule
+import com.example.peakform.screens.Leaderboard
+import com.example.peakform.screens.schedule.FinishExercise
 import com.example.peakform.screens.schedule.StartExercise
-import com.example.peakform.viewmodel.VMNotification
 import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.viewmodel.VMUser
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -41,7 +41,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, VMUser: VMUser, startDestination: String) {
+fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, vmUser: VMUser, startDestination: String) {
     var vmShowSchedule: VMShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
     AnimatedNavHost(
         navController = navController,
@@ -56,7 +56,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
     ) {
         // Authentication screens
         composable(Screens.Auth.route) {
-            Login(navController, userViewModel = VMUser)
+            Login(navController, userViewModel = vmUser)
         }
         composable(Screens.Register.route) {
             Register(navController)
@@ -81,40 +81,48 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
 
         // Home screen
         composable(Screens.Home.route) {
-            Home(navController, userViewModel = VMUser)
+            Home(navController, userViewModel = vmUser)
         }
 
         // Profile screen
         composable(Screens.Profile.route) {
-            Profile(navController, userViewModel = VMUser)
+            Profile(navController, userViewModel = vmUser)
         }
         composable(Screens.ChangePassword.route) {
-            ChangePassword(navController, userViewModel = VMUser)
+            ChangePassword(navController, userViewModel = vmUser)
         }
 
-        // Other screens
+        // Schedule screens
         composable(Screens.MakeSchedule.route) {
-            MakeSchedule(navController, userViewModel = VMUser)
+            MakeSchedule(navController, userViewModel = vmUser)
         }
-        composable(Screens.Search.route) {
-            Search(navController)
+        composable(Screens.StartExercise.route) {
+            StartExercise(navController, vmUser,viewModel = vmShowSchedule)
+        }
+        composable(Screens.FinishExercise.route) {
+            FinishExercise(navController, vmUser)
         }
         composable(Screens.ShowSchedule.route) {
             vmShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
-            ShowSchedule(navController, VMUser,vmShowSchedule)
+            ShowSchedule(navController, vmUser,vmShowSchedule)
         }
         composable(Screens.DetailSchedule.route) {
-            DetailSchedule(navController, viewModel = vmShowSchedule, VMUser)
+            DetailSchedule(navController, viewModel = vmShowSchedule, vmUser)
         }
-        composable(Screens.StartExercise.route) {
-            StartExercise(navController, VMUser,viewModel = vmShowSchedule)
+
+        // Other screens
+        composable(Screens.Search.route) {
+            Search(navController)
         }
         composable(Screens.SplashScreen.route) {
             SplashScreen(navController)
         }
         composable(Screens.Notification.route){
             vmShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
-            Notification(navController, VMUser,vmShowSchedule)
+            Notification(navController, vmUser,vmShowSchedule)
+        }
+        composable(Screens.Leaderboard.route) {
+            Leaderboard(navController)
         }
         composable(Screens.Stats.route) {
             Stats(vmUser = viewModel(), viewModel = viewModel()

@@ -70,7 +70,6 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule, use
     viewModel.updateSelectedSchedule(schedule?.id.toString())
     val today = LocalDate.now().dayOfWeek.value // Monday = 1, Sunday = 7
     val isToday = schedule?.day == today
-    val prefManager = com.example.peakform.utils.PrefManager(navController.context)
     var showAddDialog by remember { mutableStateOf(false) }
     var selectedIdExercise: Int? = null
     var setUpdate by remember { mutableStateOf<Int?>(null) }
@@ -78,11 +77,16 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule, use
     val user = userViewModel.user
     var showWarningDialog by remember { mutableStateOf(false) }
     val warningMessage by remember { mutableStateOf("Please Complete Data") }
+    val isExercisedToday by viewModel.isExercisedToday.collectAsState(initial = null)
 
     LaunchedEffect(user) {
         user?.id?.let {
             viewModel.setUserId(it)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.isUserExercisedToday()
     }
 
     NavigationBarMediumTheme {
@@ -155,7 +159,7 @@ fun DetailSchedule(navController: NavController, viewModel : VMShowSchedule, use
                 }
 
                 if (isToday) {
-                    if (prefManager.isHaveExercise() == true) {
+                    if (isExercisedToday == true) {
                         Button(
                             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background),
                             modifier = Modifier

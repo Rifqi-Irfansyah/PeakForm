@@ -88,9 +88,7 @@ fun Profile(
     }
 
     LaunchedEffect(user) {
-        Log.d("Profile", "User: $user")
         user?.id?.let {
-            profileViewModel.getLog(it)
             profileViewModel.getPhoto(it) // Load existing photo
         }
     }
@@ -114,12 +112,6 @@ fun Profile(
                     status = PopupStatus.Success,
                     popupMessage = "Profile loaded successfully!"
                 )
-
-                // Reset success state after showing popup
-                coroutineScope.launch {
-                    delay(2000L)
-                    profileViewModel.resetState()
-                }
             }
             if (error != null) {
                 Popup(
@@ -208,6 +200,22 @@ fun Profile(
                 )
                 Text(
                     text = it.email,
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 20.sp
+                    ),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = it.point.toString(),
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 20.sp
+                    ),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = it.streak.toString(),
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 20.sp
