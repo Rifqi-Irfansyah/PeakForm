@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
                             if (response.isSuccessful) {
                                 response.body()?.data?.let {
                                     VMUser.updateUser(it)
+                                    Log.d("MainActivity", "User data loaded: ${response.body()?.data}")
                                     startDestination.value = Screens.Home.route
                                 } ?: prefManager.clearToken()
                             } else {
@@ -95,7 +96,7 @@ class MainActivity : ComponentActivity() {
                     ) { paddingValues ->
                         AppNavHost(
                             navController = navController,
-                            VMUser = VMUser,
+                            vmUser = VMUser,
                             startDestination = startDestination.value,
                             modifier = Modifier.padding(paddingValues),
                         )

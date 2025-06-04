@@ -105,6 +105,22 @@ fun Profile(
                     ),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
+                Text(
+                    text = it.point.toString(),
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 20.sp
+                    ),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = it.streak.toString(),
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 20.sp
+                    ),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.peakform.R
-import com.example.peakform.data.model.User
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,56 +50,7 @@ fun Leaderboard(
     navController: NavController,
     leaderboardViewModel: VMLeaderboard = viewModel()
 ) {
-    val leaderboardData = listOf(
-        User(
-            id = "1",
-            name = "John Doe",
-            email = "john@example.com",
-            token = "token1",
-            points = 1500
-        ),
-        User(
-            id = "2",
-            name = "Jane Smith",
-            email = "jane@example.com",
-            token = "token2",
-            points = 1200
-        ),
-        User(
-            id = "3",
-            name = "Bob Wilson",
-            email = "bob@example.com",
-            token = "token3",
-            points = 900
-        ),
-        User(
-            id = "4",
-            name = "Alice Brown",
-            email = "alice@example.com",
-            token = "token4",
-            points = 800
-        ),
-        User(
-            id = "5",
-            name = "Charlie Davis",
-            email = "charlie@example.com",
-            token = "token5",
-            points = 700
-        ),
-        User(
-            id = "6",
-            name = "Emma Clark",
-            email = "emma@example.com",
-            token = "token6",
-            points = 600
-        )
-    )
-
-    val loading by leaderboardViewModel.loading.collectAsState()
-    val success by leaderboardViewModel.success.collectAsState()
-    val error by leaderboardViewModel.error.collectAsState()
     val userLeaderboard by leaderboardViewModel.userLeaderboard.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         leaderboardViewModel.getLeaderboard()

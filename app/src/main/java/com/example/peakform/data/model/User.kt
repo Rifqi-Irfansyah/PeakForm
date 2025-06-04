@@ -8,5 +8,6 @@ data class User(
     val name: String,
     val email: String,
     val token: String,
-    val points: Int
+    val point: Int,
+    val streak: Int,
 )
