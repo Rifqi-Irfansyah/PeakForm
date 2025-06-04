@@ -11,12 +11,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -24,9 +26,19 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.peakform.R
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
+import com.example.peakform.viewmodel.VMFinishExercise
+import com.example.peakform.viewmodel.VMUser
 
 @Composable
-fun FinishExercise(navController: NavController){
+fun FinishExercise(navController: NavController, userViewModel: VMUser,viewModel : VMFinishExercise = viewModel()) {
+    val user = userViewModel.user
+    
+    LaunchedEffect(user) {
+        user?.id?.let {
+            viewModel.setUserId(it)
+        }
+    }
+    
     NavigationBarMediumTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -58,7 +70,10 @@ fun FinishExercise(navController: NavController){
                     )
                     Button(
                         colors = ButtonDefaults.buttonColors(Color.White),
-                        onClick = {navController.popBackStack()}
+                        onClick = {
+                            viewModel.updateStreak()
+                            navController.popBackStack()
+                        }
                     ){
                         Text(
                             text = "Back to Home",

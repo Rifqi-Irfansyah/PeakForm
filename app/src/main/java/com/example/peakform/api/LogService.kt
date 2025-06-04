@@ -2,7 +2,7 @@ package com.example.peakform.api
 
 import com.example.peakform.data.model.CreateLogRequest
 import com.example.peakform.data.model.GenericResponse
-import com.example.peakform.data.model.GetLogResponse
+import com.example.peakform.data.model.IsExercisedTodayResponse
 import com.example.peakform.data.model.LeaderboardResponse
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import retrofit2.Response
@@ -20,15 +20,10 @@ interface LogService {
     @GET("/leaderboard")
     suspend fun getLeaderboard(): Response<LeaderboardResponse>
 
-    @GET("/logs/{userId}")
-    suspend fun getLog(
-        @Path("userId") id: String,
-    ): Response<GetLogResponse>
-
     @GET("/logs/is-exercised-today/{userId}")
     suspend fun isExercisedToday(
         @Path("userId") id: String,
-    ): Response<GenericResponse>
+    ): Response<IsExercisedTodayResponse>
 
     companion object {
         val instance: LogService by lazy {

@@ -25,4 +25,5 @@ sealed class Screens(val route : String) {
     object SplashScreen : Screens("splash_screen")
     object Notification : Screens("notification_screen")
     object Leaderboard : Screens("leaderboard_screen")
+    object FinishExercise: Screens("finish_exercise_screen")
 }
