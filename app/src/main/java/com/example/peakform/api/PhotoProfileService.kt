@@ -1,6 +1,6 @@
 package com.example.peakform.api
 
-import com.example.peakform.data.model.PhotoResponse
+import com.example.peakform.data.model.UploadResponse
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -8,20 +8,23 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.POST
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface PhotoProfileService {
-    @POST("user/{id}/photo")
+
+    @Multipart
+    @POST("users/{id}/photo")
     suspend fun uploadPhoto(
         @Path("id") userId: String,
         @Part file: MultipartBody.Part
-    ): Response<PhotoResponse>
+    ): Response<UploadResponse>
 
-    @GET("user/{id}/photo")
+    @GET("users/{id}/photo")
     suspend fun getPhoto(
         @Path("id") userId: String
-    ): Response<PhotoResponse>
+    ): Response<UploadResponse>
 
     companion object {
       val instance: PhotoProfileService by lazy {

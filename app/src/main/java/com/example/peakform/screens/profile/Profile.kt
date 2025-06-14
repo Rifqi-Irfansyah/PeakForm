@@ -1,9 +1,7 @@
 package com.example.peakform.screens.profile
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -44,7 +42,6 @@ import java.io.File
 import java.io.FileOutputStream
 
 @RequiresApi(Build.VERSION_CODES.O)
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Profile(
     navController: NavController,
@@ -52,48 +49,71 @@ fun Profile(
     userViewModel: VMUser = viewModel()
 ) {
     val loading by profileViewModel.loading.collectAsState()
-    val success by profileViewModel.success.collectAsState()
-    val error by profileViewModel.error.collectAsState()
     val logs by profileViewModel.logs.collectAsState()
     val photoUrl by profileViewModel.photoUrl.collectAsState()
     val user = userViewModel.user
     val coroutineScope = rememberCoroutineScope()
     val prefManager = PrefManager(navController.context)
     val context = LocalContext.current
+    LaunchedEffect(user?.id) {
+        user?.id?.let { userId ->
+            profileViewModel.getUserPhoto(userId) { _, _ -> }
+        }
+    }
 
-    var showImagePicker by remember { mutableStateOf(false) }
+    var showUploadPopup by remember { mutableStateOf(false) }
+    var uploadPopupStatus by remember { mutableStateOf<PopupStatus>(PopupStatus.Loading) }
+    var uploadPopupMessage by remember { mutableStateOf("") }
 
-    // Gallery launcher
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let { selectedUri ->
             user?.id?.let { userId ->
-                // Convert URI to File
                 try {
                     val inputStream = context.contentResolver.openInputStream(selectedUri)
                     val tempFile = File(context.cacheDir, "temp_profile_${System.currentTimeMillis()}.jpg")
                     val outputStream = FileOutputStream(tempFile)
-
                     inputStream?.copyTo(outputStream)
                     inputStream?.close()
                     outputStream.close()
 
-                    profileViewModel.uploadPhoto(userId, tempFile)
+                    showUploadPopup = true
+                    uploadPopupStatus = PopupStatus.Loading
+                    uploadPopupMessage = "Uploading..."
+
+                    profileViewModel.uploadUserPhoto(userId, tempFile) { isSuccess, message ->
+                        coroutineScope.launch {
+                            if (isSuccess) {
+                                profileViewModel.getUserPhoto(userId) { _, _ -> }
+
+                                uploadPopupStatus = PopupStatus.Success
+                                uploadPopupMessage = "Photo uploaded successfully!"
+                            } else {
+                                uploadPopupStatus = PopupStatus.Error
+                                uploadPopupMessage = message ?: "Failed to upload photo"
+                            }
+
+                            delay(2000L)
+                            showUploadPopup = false
+                            profileViewModel.resetState()
+                        }
+                    }
                 } catch (e: Exception) {
-                    Log.e("Profile", "Error converting URI to File: ${e.message}")
+                    profileViewModel.setError("Failed to process file: ${e.message}")
+                    showUploadPopup = true
+                    uploadPopupStatus = PopupStatus.Error
+                    uploadPopupMessage = "Failed to process file: ${e.message}"
+                    coroutineScope.launch {
+                        delay(3000L)
+                        showUploadPopup = false
+                    }
                 }
             }
         }
     }
 
-    LaunchedEffect(user) {
-        user?.id?.let {
-            profileViewModel.getPhoto(it) // Load existing photo
-        }
-    }
-
-    LazyColumn (
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
@@ -101,76 +121,55 @@ fun Profile(
         verticalArrangement = Arrangement.Center
     ) {
         item {
-            if (loading) {
+            if (showUploadPopup) {
                 Popup(
-                    status = PopupStatus.Loading,
-                    popupMessage = "Loading..."
+                    status = uploadPopupStatus,
+                    popupMessage = uploadPopupMessage
                 )
-            }
-            if (success) {
-                Popup(
-                    status = PopupStatus.Success,
-                    popupMessage = "Profile loaded successfully!"
-                )
-            }
-            if (error != null) {
-                Popup(
-                    status = PopupStatus.Error,
-                    popupMessage = error ?: "An error occurred",
-                )
-
-                coroutineScope.launch {
-                    delay(3000L)
-                    profileViewModel.resetState()
-                }
             }
 
-            // Profile Photo Section
             Box(
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(150.dp)
                     .padding(bottom = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 if (photoUrl != null) {
-                    // Display uploaded photo
                     AsyncImage(
                         model = ImageRequest.Builder(context)
                             .data(photoUrl)
                             .crossfade(true)
+                            .size(150, 150)
                             .build(),
                         contentDescription = "Profile Photo",
                         modifier = Modifier
-                            .fillMaxSize()
+                            .size(150.dp)
                             .clip(CircleShape)
                             .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                            .clickable { showImagePicker = true },
-                        contentScale = ContentScale.Crop
+                            .clickable { galleryLauncher.launch("image/*") },
+                        contentScale = ContentScale.Crop,
                     )
                 } else {
-                    // Default profile icon with upload option
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .size(150.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                             .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                            .clickable { galleryLauncher.launch("image/*") }, // Menambahkan aksi klik untuk membuka galeri
+                            .clickable { galleryLauncher.launch("image/*") },
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = "Default Profile",
-                                modifier = Modifier.size(40.dp),
+                                modifier = Modifier.size(50.dp),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "Add Photo",
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(25.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -188,7 +187,6 @@ fun Profile(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            Log.d("Profile", "User: $user")
             user?.let {
                 Text(
                     text = it.name,
@@ -207,7 +205,7 @@ fun Profile(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = it.point.toString(),
+                    text = "Points: ${it.point}",
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 20.sp
@@ -215,7 +213,7 @@ fun Profile(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = it.streak.toString(),
+                    text = "Streak: ${it.streak}",
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 20.sp
@@ -226,8 +224,6 @@ fun Profile(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Log.d("Profile", "Logs: $logs")
-
             Button(
                 onClick = { navController.navigate(Screens.ChangePassword.route) },
                 shape = MaterialTheme.shapes.large,
@@ -235,8 +231,8 @@ fun Profile(
                 enabled = !loading
             ) {
                 Text(
-                    "Change Password",
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    text = "Change Password",
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -252,8 +248,8 @@ fun Profile(
                 enabled = !loading
             ) {
                 Text(
-                    "Logout",
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    text = "Logout",
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
