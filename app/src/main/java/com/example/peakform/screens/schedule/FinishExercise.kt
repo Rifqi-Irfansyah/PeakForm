@@ -72,6 +72,7 @@ fun FinishExercise(navController: NavController, userViewModel: VMUser,viewModel
                         colors = ButtonDefaults.buttonColors(Color.White),
                         onClick = {
                             viewModel.updateStreak()
+                            userViewModel.fetchUser(user?.id ?: "")
                             navController.popBackStack()
                         }
                     ){
