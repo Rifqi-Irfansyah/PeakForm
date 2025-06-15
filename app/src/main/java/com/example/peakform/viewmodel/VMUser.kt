@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 
 class VMUser : ViewModel() {
     var user by mutableStateOf<User?>(null)
-        private set
 
     fun checkStreak(userid: String) {
         viewModelScope.launch {
