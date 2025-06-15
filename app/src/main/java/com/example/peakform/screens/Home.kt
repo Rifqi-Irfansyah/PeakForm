@@ -1,11 +1,8 @@
 package com.example.peakform.screens
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
@@ -18,10 +15,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,13 +29,21 @@ import com.example.peakform.viewmodel.VMHome
 import com.example.peakform.ui.components.CardImage
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import com.example.peakform.viewmodel.VMUser
-import java.time.LocalTime
+import kotlinx.coroutines.delay
+import com.example.peakform.ui.components.PointStreakInfo
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome = viewModel()){
+fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome = viewModel()) {
     val schedule by viewModel.scheduleStatus.collectAsState()
     val user = userViewModel.user
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000L)
+        }
+    }
 
     LaunchedEffect(user) {
         user?.id?.let {
@@ -56,7 +61,6 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-
                 Row(
                     modifier = Modifier
                         .align(Alignment.TopEnd),
@@ -71,7 +75,7 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Icon(
-                        painter = painterResource(id = R.drawable.trophy), // ganti dengan icon trophy kamu
+                        painter = painterResource(id = R.drawable.trophy),
                         contentDescription = "Trophy",
                         modifier = Modifier
                             .size(24.dp)
@@ -81,42 +85,58 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                 }
             }
 
-
-
             Column(
                 modifier = Modifier.fillMaxSize().padding(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ){
-                    
+                Box(modifier = Modifier.height(45.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Box(modifier = Modifier.height(5.dp))
+                    Text(
+                        text = "Hello, ${user?.name ?: "User"}!",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 28.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Text(
+                        text = getMotivationalMessage(user?.streak ?: 0),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                        ),
+                        textAlign = TextAlign.Start
+                    )
                 }
-                StreakBar(streak = user?.streak ?: 0)
 
-                if(schedule){
+                PointStreakInfo(streak = user?.streak ?: 0, points = user?.point ?: 0, rank = 2)
+
+                if (schedule) {
                     CardImage(
                         backgroundRes = R.drawable.cardschedules,
                         title = "YOUR\nSCHEDULE",
                         titleColor = Color.White,
-                        onClick = { navController.navigate(Screens.ShowSchedule.route)}
+                        onClick = { navController.navigate(Screens.ShowSchedule.route) }
                     )
-
                     CardImage(
                         backgroundRes = R.drawable.cardnotification,
                         title = "ADJUST\nNOTIFICATION",
                         titleColor = Color.White,
-                        onClick = { navController.navigate(Screens.Notification.route)}
+                        onClick = { navController.navigate(Screens.Notification.route) }
                     )
-                }
-                else{
+                } else {
                     CardImage(
                         backgroundRes = R.drawable.cardgoal,
                         title = "SET \nYOUR GOAL",
                         titleColor = Color.White,
-                        onClick = { navController.navigate(Screens.MakeSchedule.route)}
+                        onClick = { navController.navigate(Screens.MakeSchedule.route) }
                     )
                 }
             }
@@ -125,63 +145,13 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
 }
 
 @Composable
-fun StreakBar(streak: Int) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Your Streak",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
-            modifier = Modifier
-                .padding(bottom = 2.dp)
-                .align(Alignment.Start)
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(32.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(28.dp)
-                    .clip(RoundedCornerShape(topStart = 14.dp, bottomStart = 14.dp))
-                    .background(MaterialTheme.colorScheme.background)
-                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(14.dp))
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    repeat(10) { index ->
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
-                                .background(
-                                    if (index < streak) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
-                                )
-                        )
-                    }
-                }
-            }
-            Text(
-                text = "$streak/10",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            )
-        }
+fun getMotivationalMessage(streak: Int): String {
+    return when (streak) {
+        0 -> "Start your journey with a single step!"
+        in 1..2 -> "Great start! Keep pushing forward!"
+        in 3..5 -> "You're building momentum, keep it up!"
+        in 6..8 -> "You're on fire! Aim for the stars!"
+        in 9..10 -> "Unstoppable! You're a fitness legend!"
+        else -> "Keep shining, you're doing amazing!"
     }
 }

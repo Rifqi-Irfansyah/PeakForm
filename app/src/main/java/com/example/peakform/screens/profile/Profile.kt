@@ -32,7 +32,10 @@ import coil.request.ImageRequest
 import com.example.peakform.api.PhotoProfileService
 import com.example.peakform.data.model.PopupStatus
 import com.example.peakform.navigation.Screens
+import com.example.peakform.ui.components.FrequentExerciseCard
+import com.example.peakform.ui.components.PointStreakInfo
 import com.example.peakform.ui.components.Popup
+import com.example.peakform.ui.components.SetRepInfo
 import com.example.peakform.utils.PrefManager
 import com.example.peakform.viewmodel.VMProfile
 import com.example.peakform.viewmodel.VMUser
@@ -50,7 +53,7 @@ fun Profile(
 ) {
     val loading by profileViewModel.loading.collectAsState()
     val photoUrl by profileViewModel.photoUrl.collectAsState()
-    val user = userViewModel.user
+    var user = userViewModel.user
     val coroutineScope = rememberCoroutineScope()
     val prefManager = PrefManager(navController.context)
     val context = LocalContext.current
@@ -63,6 +66,10 @@ fun Profile(
                 }
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        user = userViewModel.fetchUser(user?.id ?: "")
     }
 
     var showUploadPopup by remember { mutableStateOf(false) }
@@ -180,50 +187,39 @@ fun Profile(
                 }
             }
 
+
             Text(
-                text = "Profile",
+                text = user?.name ?: "",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.primary,
-                    fontSize = 40.sp,
+                    fontSize = 35.sp,
                     fontWeight = FontWeight.Bold
                 ),
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 5.dp)
+            )
+            Text(
+                text = user?.email ?: "",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    fontSize = 20.sp
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            user?.let {
-                Text(
-                    text = it.name,
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 20.sp
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = it.email,
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 20.sp
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = "Points: ${it.point}",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 20.sp
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = "Streak: ${it.streak}",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 20.sp
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PointStreakInfo(
+                points = user?.point ?: 0,
+                streak = user?.streak ?: 0,
+                rank = 2,
+            )
+
+            SetRepInfo(
+                set = 120000,
+                rep = 2000000
+            )
+
+            FrequentExerciseCard(exerciseName = "Pushups", exerciseImageUrl = "http://10.0.2.2:3000/static/exercises/pushup.svg")
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -255,8 +251,6 @@ fun Profile(
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }

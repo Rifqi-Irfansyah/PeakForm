@@ -33,6 +33,7 @@ import com.example.peakform.screens.schedule.ShowSchedule
 import com.example.peakform.screens.Leaderboard
 import com.example.peakform.screens.schedule.FinishExercise
 import com.example.peakform.screens.schedule.StartExercise
+import com.example.peakform.utils.PrefManager
 import com.example.peakform.viewmodel.VMShowSchedule
 import com.example.peakform.viewmodel.VMUser
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -42,7 +43,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, vmUser: VMUser, startDestination: String) {
-    var vmShowSchedule: VMShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
+    var vmShowSchedule: VMShowSchedule = viewModel()
     AnimatedNavHost(
         navController = navController,
         startDestination = startDestination,
@@ -103,7 +104,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
             FinishExercise(navController, vmUser)
         }
         composable(Screens.ShowSchedule.route) {
-            vmShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
+            vmShowSchedule = viewModel()
             ShowSchedule(navController, vmUser,vmShowSchedule)
         }
         composable(Screens.DetailSchedule.route) {
@@ -115,10 +116,14 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
             Search(navController)
         }
         composable(Screens.SplashScreen.route) {
-            SplashScreen(navController)
+            SplashScreen(
+                navController,
+                vmUser = vmUser,
+                prefManager = PrefManager(navController.context),
+            )
         }
         composable(Screens.Notification.route){
-            vmShowSchedule = androidx.lifecycle.viewmodel.compose.viewModel()
+            vmShowSchedule = viewModel()
             Notification(navController, vmUser,vmShowSchedule)
         }
         composable(Screens.Leaderboard.route) {
