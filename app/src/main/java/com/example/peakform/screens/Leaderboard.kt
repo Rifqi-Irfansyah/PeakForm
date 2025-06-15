@@ -150,7 +150,7 @@ fun LeaderboardCard(user: UserLeaderboard, position: Int) {
         else -> 1.dp
     }
 
-    val showStar = position == 1
+    val showStar = position in 1..3
 
     Surface(
         modifier = Modifier
@@ -214,7 +214,7 @@ fun LeaderboardCard(user: UserLeaderboard, position: Int) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${user.point} points",
+                    text = "${user.point} Points",
                     style = TextStyle(
                         color = if (position <= 3) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.secondary,
                         fontSize = pointsFontSize,
@@ -222,6 +222,7 @@ fun LeaderboardCard(user: UserLeaderboard, position: Int) {
                     ),
                     modifier = Modifier.padding(start = 8.dp)
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 if (showStar) {
                     Icon(
                         imageVector = Icons.Default.Star,
@@ -229,6 +230,8 @@ fun LeaderboardCard(user: UserLeaderboard, position: Int) {
                         tint = borderColor,
                         modifier = Modifier.size(20.dp)
                     )
+                } else {
+                    Spacer(modifier = Modifier.size(20.dp)) // Placeholder for alignment
                 }
             }
         }
