@@ -31,7 +31,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.peakform.data.model.PopupStatus
 import com.example.peakform.navigation.Screens
+import com.example.peakform.ui.components.FrequentExerciseCard
+import com.example.peakform.ui.components.PointStreakInfo
 import com.example.peakform.ui.components.Popup
+import com.example.peakform.ui.components.SetRepInfo
 import com.example.peakform.utils.PrefManager
 import com.example.peakform.viewmodel.VMProfile
 import com.example.peakform.viewmodel.VMUser
@@ -179,48 +182,39 @@ fun Profile(
                 }
             }
 
-            Text(
-                text = "Profile",
-                style = TextStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
 
             Text(
                 text = user?.name ?: "",
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.primary,
-                    fontSize = 20.sp
+                    fontSize = 35.sp,
+                    fontWeight = FontWeight.Bold
                 ),
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 5.dp)
             )
             Text(
                 text = user?.email ?: "",
                 style = TextStyle(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                     fontSize = 20.sp
                 ),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            Text(
-                text = "Points: ${user?.point}",
-                style = TextStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 20.sp
-                ),
-                modifier = Modifier.padding(bottom = 8.dp)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PointStreakInfo(
+                points = user?.point ?: 0,
+                streak = user?.streak ?: 0,
+                rank = 2,
             )
-            Text(
-                text = "Streak: ${user?.streak}",
-                style = TextStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 20.sp
-                ),
-                modifier = Modifier.padding(bottom = 8.dp)
+
+            SetRepInfo(
+                set = 120000,
+                rep = 2000000
             )
+
+            FrequentExerciseCard(exerciseName = "Pushups", exerciseImageUrl = "http://10.0.2.2:3000/static/exercises/pushup.svg")
 
             Spacer(modifier = Modifier.height(16.dp))
 

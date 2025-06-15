@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                             if (response.isSuccessful) {
                                 response.body()?.data?.let {
                                     VMUser.updateUser(it)
-                                    startDestination.value = Screens.Home.route
+                                    startDestination.value = Screens.Profile.route
                                 } ?: prefManager.clearToken()
                             } else {
                                 prefManager.clearToken()

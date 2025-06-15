@@ -1,11 +1,8 @@
 package com.example.peakform.screens
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
@@ -33,7 +30,7 @@ import com.example.peakform.ui.components.CardImage
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import com.example.peakform.viewmodel.VMUser
 import kotlinx.coroutines.delay
-import androidx.compose.material3.Card
+import com.example.peakform.ui.components.PointStreakInfo
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -119,7 +116,7 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                     )
                 }
 
-                StreakBar(streak = user?.streak ?: 0, points = user?.point ?: 0, rank = 2)
+                PointStreakInfo(streak = user?.streak ?: 0, points = user?.point ?: 0, rank = 2)
 
                 if (schedule) {
                     CardImage(
@@ -144,129 +141,6 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                 }
             }
         }
-    }
-}
-
-@Composable
-fun StreakBar(streak: Int, points: Int, rank: Int) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(80.dp)
-                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp)),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "Streak",
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                        Text(
-                            text = "$streak/10",
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 20.sp
-                        )
-                    }
-                }
-            }
-
-            Box(modifier = Modifier.width(10.dp))
-
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(80.dp)
-                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp)),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "Points",
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                        Text(
-                            text = formatPoints(points),
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 20.sp
-                        )
-                    }
-                }
-            }
-
-            Box(modifier = Modifier.width(10.dp))
-
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(80.dp)
-                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp)),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "Ranks",
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                        Text(
-                            text = "$rank#",
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 20.sp
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun formatPoints(points: Int): String {
-    return when {
-        points >= 1000000 -> "${(points / 1000000.0).toInt()}M"
-        points >= 1000 -> "${(points / 1000.0).toInt()}K"
-        else -> points.toString()
     }
 }
 
