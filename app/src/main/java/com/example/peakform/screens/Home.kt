@@ -18,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +34,6 @@ import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import com.example.peakform.viewmodel.VMUser
 import kotlinx.coroutines.delay
 import androidx.compose.material3.Card
-import kotlin.math.roundToInt
 
 
 @RequiresApi(Build.VERSION_CODES.O)

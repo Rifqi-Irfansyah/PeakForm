@@ -16,7 +16,6 @@ import com.example.peakform.navigation.Screens
 import com.example.peakform.utils.PrefManager
 import com.example.peakform.viewmodel.VMUser
 import com.example.peakform.api.AuthService
-import android.util.Log
 import androidx.compose.foundation.background
 import kotlinx.coroutines.delay
 
