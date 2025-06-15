@@ -1,5 +1,6 @@
 package com.example.peakform.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -16,12 +17,14 @@ class VMStats : ViewModel() {
             try {
                 val response = StatsService.instance.getUserStats(userId)
                 if (response.isSuccessful) {
+                    Log.d("VMStats", "Response body: ${response.body()}")
                     stats = response.body()?.data
                 } else {
-                    errorMessage = "Failed: ${response.code()} ${response.message()}"
+                    errorMessage = "Failed: ${response.message()}"
                 }
             } catch (e: Exception) {
-                errorMessage = e.localizedMessage
+                Log.e("VMStats", "Exception: ${e.message}")
+                errorMessage = e.message
             }
         }
     }
