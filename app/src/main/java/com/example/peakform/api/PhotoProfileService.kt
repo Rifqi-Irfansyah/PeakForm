@@ -34,5 +34,6 @@ interface PhotoProfileService {
                 .build()
                 .create(PhotoProfileService::class.java)
         }
+        fun getBaseUrlForPhoto(): String = "${BASE_URL}users/static/photo/"
     }
 }

@@ -7,5 +7,5 @@ data class UploadResponse(
 )
 
 data class PhotoData(
-    val url: String
+    val filename: String
 )

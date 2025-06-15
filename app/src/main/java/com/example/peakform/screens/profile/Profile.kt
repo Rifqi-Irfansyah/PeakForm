@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
@@ -30,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.peakform.api.PhotoProfileService
 import com.example.peakform.data.model.PopupStatus
 import com.example.peakform.navigation.Screens
 import com.example.peakform.ui.components.Popup
@@ -49,15 +49,19 @@ fun Profile(
     userViewModel: VMUser = viewModel()
 ) {
     val loading by profileViewModel.loading.collectAsState()
-    val logs by profileViewModel.logs.collectAsState()
     val photoUrl by profileViewModel.photoUrl.collectAsState()
     val user = userViewModel.user
     val coroutineScope = rememberCoroutineScope()
     val prefManager = PrefManager(navController.context)
     val context = LocalContext.current
+
     LaunchedEffect(user?.id) {
         user?.id?.let { userId ->
-            profileViewModel.getUserPhoto(userId) { _, _ -> }
+            profileViewModel.getUserPhoto(userId) { isSuccess, filename ->
+                if (isSuccess && filename != null) {
+                    profileViewModel.setPhotoUrl(filename)
+                }
+            }
         }
     }
 
@@ -82,16 +86,15 @@ fun Profile(
                     uploadPopupStatus = PopupStatus.Loading
                     uploadPopupMessage = "Uploading..."
 
-                    profileViewModel.uploadUserPhoto(userId, tempFile) { isSuccess, message ->
+                    profileViewModel.uploadUserPhoto(userId, tempFile) { isSuccess, filenameOrMessage ->
                         coroutineScope.launch {
-                            if (isSuccess) {
-                                profileViewModel.getUserPhoto(userId) { _, _ -> }
-
+                            if (isSuccess && filenameOrMessage != null) {
+                                profileViewModel.setPhotoUrl(PhotoProfileService.getBaseUrlForPhoto() + filenameOrMessage)
                                 uploadPopupStatus = PopupStatus.Success
                                 uploadPopupMessage = "Photo uploaded successfully!"
                             } else {
                                 uploadPopupStatus = PopupStatus.Error
-                                uploadPopupMessage = message ?: "Failed to upload photo"
+                                uploadPopupMessage = filenameOrMessage ?: "Failed to upload photo"
                             }
 
                             delay(2000L)
@@ -253,64 +256,7 @@ fun Profile(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (logs.isNotEmpty()) {
-                Text(
-                    text = "Exercise Logs:",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                logs.forEach { log ->
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        shadowElevation = 4.dp,
-                        color = MaterialTheme.colorScheme.surface
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Exercise: ${log.exercise.name}",
-                                    style = TextStyle(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontSize = 16.sp
-                                    )
-                                )
-                                Text(
-                                    text = "Set: ${log.set}",
-                                    style = TextStyle(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontSize = 16.sp
-                                    )
-                                )
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Reps: ${log.repetition}",
-                                    style = TextStyle(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontSize = 16.sp
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }

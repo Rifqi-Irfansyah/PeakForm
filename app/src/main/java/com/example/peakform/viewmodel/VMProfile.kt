@@ -31,9 +31,6 @@ class VMProfile : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    private val _logs = MutableStateFlow<List<com.example.peakform.data.model.Log>>(emptyList())
-    val logs: StateFlow<List<com.example.peakform.data.model.Log>> = _logs
-
     private val _photoUrl = MutableStateFlow<String?>(null)
     val photoUrl: StateFlow<String?> = _photoUrl
 
@@ -62,8 +59,8 @@ class VMProfile : ViewModel() {
         viewModelScope.launch {
             _loading.value = true
             try {
-                val changePasswordRequest = ChangePasswordRequest(id, oldPassword, newPassword)
-                val response: Response<GenericResponse> = AuthService.instance.changePassword(changePasswordRequest)
+                val request = ChangePasswordRequest(id, oldPassword, newPassword)
+                val response: Response<GenericResponse> = AuthService.instance.changePassword(request)
                 if (response.isSuccessful) {
                     _success.value = true
                 } else {
@@ -82,6 +79,7 @@ class VMProfile : ViewModel() {
             onResult(false, "User ID is required")
             return
         }
+
         val allowedExt = listOf(".jpg", ".jpeg", ".png")
         val ext = ".${file.extension.lowercase()}"
         if (!allowedExt.contains(ext)) {
@@ -101,16 +99,15 @@ class VMProfile : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                Log.d("VMProfile", "Uploading file: ${file.name} with ext: $ext, size: ${file.length()} bytes")
                 val response = photoService.uploadPhoto(userId, photoPart)
                 withContext(Dispatchers.Main) {
-                    Log.d("VMProfile", "Response code: ${response.code()}, Body: ${response.body()}")
                     if (response.isSuccessful && response.body()?.status == "success") {
-                        val url = response.body()?.data?.url
-                        _photoUrl.value = url
+                        val filename = response.body()?.data?.filename
+                        val fullUrl = PhotoProfileService.getBaseUrlForPhoto() + filename
+                        _photoUrl.value = fullUrl
                         _success.value = true
                         _error.value = null
-                        onResult(true, url)
+                        onResult(true, fullUrl)
                     } else {
                         val errorMessage = response.errorBody()?.string()?.let { parseErrorMessage(it) } ?: "Unknown error"
                         _error.value = errorMessage
@@ -139,24 +136,18 @@ class VMProfile : ViewModel() {
             try {
                 val response = photoService.getPhoto(userId)
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        if (body?.status == "success") {
-                            val url = body.data?.url
-                            _photoUrl.value = url
-                            _error.value = null
-                            onResult(true, url)
-                        } else if (body?.status == "error" && body.message == "Photo not found") {
-                            _photoUrl.value = null
-                            _error.value = null
-                            onResult(true, null)
-                        } else {
-                            val errorMessage = body?.message ?: "Unknown error"
-                            _error.value = errorMessage
-                            onResult(false, errorMessage)
-                        }
+                    if (response.isSuccessful && response.body()?.status == "success") {
+                        val filename = response.body()?.data?.filename
+                        val fullUrl = PhotoProfileService.getBaseUrlForPhoto() + filename
+                        _photoUrl.value = fullUrl
+                        _error.value = null
+                        onResult(true, fullUrl)
+                    } else if (response.body()?.status == "error" && response.body()?.message == "Photo not found") {
+                        _photoUrl.value = null
+                        _error.value = null
+                        onResult(true, null)
                     } else {
-                        val errorMessage = response.errorBody()?.string()?.let { parseErrorMessage(it) } ?: "Fetch failed: ${response.code()}"
+                        val errorMessage = response.body()?.message ?: "Unknown error"
                         _error.value = errorMessage
                         onResult(false, errorMessage)
                     }

@@ -19,7 +19,6 @@ import androidx.navigation.navArgument
 import com.example.peakform.screens.Home
 import com.example.peakform.screens.Notification
 import com.example.peakform.screens.Search
-import com.example.peakform.screens.Stats
 import com.example.peakform.screens.SplashScreen
 import com.example.peakform.screens.auth.Login
 import com.example.peakform.screens.auth.forgetpassword.ForgetPassword
@@ -124,10 +123,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
         }
         composable(Screens.Leaderboard.route) {
             Leaderboard(navController)
-        }
-        composable(Screens.Stats.route) {
-            Stats(vmUser = viewModel(), viewModel = viewModel()
-            )
         }
     }
 }
