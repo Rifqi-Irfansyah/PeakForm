@@ -1,6 +1,7 @@
 package com.example.peakform.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,11 +35,15 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.peakform.R
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.peakform.api.PhotoProfileService
 import com.example.peakform.data.model.UserLeaderboard
 import com.example.peakform.viewmodel.VMLeaderboard
 
@@ -183,15 +188,15 @@ fun LeaderboardCard(user: UserLeaderboard, position: Int) {
                     textAlign = TextAlign.Center
                 )
 
-//                AsyncImage(
-//                    model = "https://example.com/photo${use.id}.jpg",
-//                    contentDescription = "Profile Picture",
-//                    modifier = Modifier
-//                        .size(imageSize)
-//                        .clip(CircleShape)
-//                        .border(borderWidth, borderColor, CircleShape),
-//                    contentScale = ContentScale.Crop
-//                )
+                AsyncImage(
+                    model = PhotoProfileService.getBaseUrlForPhoto() + user.photo,
+                    contentDescription = "User Photo",
+                    modifier = Modifier
+                        .size(imageSize)
+                        .clip(CircleShape)
+                        .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                    contentScale = ContentScale.Crop
+                )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
