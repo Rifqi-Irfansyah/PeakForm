@@ -87,7 +87,7 @@ fun Register(navController: NavController, viewModel: VMRegister = viewModel()) 
             text = "Join PeakForm Today!",
             style = TextStyle(
                 color = MaterialTheme.colorScheme.primary,
-                fontSize = 35.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier.padding(bottom = 16.dp)

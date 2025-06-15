@@ -11,6 +11,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -18,6 +19,7 @@ import androidx.navigation.navArgument
 import com.example.peakform.screens.Home
 import com.example.peakform.screens.Notification
 import com.example.peakform.screens.Search
+import com.example.peakform.screens.Stats
 import com.example.peakform.screens.SplashScreen
 import com.example.peakform.screens.auth.Login
 import com.example.peakform.screens.auth.forgetpassword.ForgetPassword
@@ -122,6 +124,10 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier, 
         }
         composable(Screens.Leaderboard.route) {
             Leaderboard(navController)
+        }
+        composable(Screens.Stats.route) {
+            Stats(vmUser = viewModel(), viewModel = viewModel()
+            )
         }
     }
 }

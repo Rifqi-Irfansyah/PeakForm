@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,23 +36,21 @@ import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome = viewModel()) {
+fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome = viewModel()){
     val schedule by viewModel.scheduleStatus.collectAsState()
     val user = userViewModel.user
-    val currentHour = LocalTime.now().hour
-    val greeting = when {
-        currentHour < 12 -> "Good Morning"
-        currentHour < 17 -> "Good Afternoon"
-        else -> "Good Evening"
+
+    LaunchedEffect(user) {
+        user?.id?.let {
+            viewModel.setUserId(it)
+        }
     }
 
     NavigationBarMediumTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
         ) {
-            // ========== HEADER ==========
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -82,75 +81,43 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
+
+
+            Column(
+                modifier = Modifier.fillMaxSize().padding(15.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column {
-                    Text(
-                        text = "$greeting, ${user?.name ?: "Fauzan"}",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    
+                }
+                StreakBar(streak = user?.streak ?: 0)
+
+                if(schedule){
+                    CardImage(
+                        backgroundRes = R.drawable.cardschedules,
+                        title = "YOUR\nSCHEDULE",
+                        titleColor = Color.White,
+                        onClick = { navController.navigate(Screens.ShowSchedule.route)}
                     )
-                    Text(
-                        text = "Let's stay active today!",
-                        fontSize = 16.sp,
-                        color = Color.Gray
+
+                    CardImage(
+                        backgroundRes = R.drawable.cardnotification,
+                        title = "ADJUST\nNOTIFICATION",
+                        titleColor = Color.White,
+                        onClick = { navController.navigate(Screens.Notification.route)}
                     )
                 }
-            }
-
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(), // Takes remaining height
-                color = Color.Transparent
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            color = MaterialTheme.colorScheme.background,
-                        )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(20.dp)
-                    ) {
-                        StreakBar(streak = 5) // Static streak for now
-                        Column(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            CardImage(
-                                backgroundRes = R.drawable.cardlist,
-                                title = "LIST\nEXERCISE",
-                                titleColor = Color.White,
-                                onClick = { }
-                            )
-                            if (schedule) {
-                                CardImage(
-                                    backgroundRes = R.drawable.cardschedules,
-                                    title = "YOUR\nSCHEDULE",
-                                    titleColor = Color.White,
-                                    onClick = { navController.navigate(Screens.ShowSchedule.route) }
-                                )
-                            } else {
-                                CardImage(
-                                    backgroundRes = R.drawable.cardgoal,
-                                    title = "SET\nYOUR GOAL",
-                                    titleColor = Color.White,
-                                    onClick = { navController.navigate(Screens.MakeSchedule.route) }
-                                )
-                            }
-                        }
-                    }
+                else{
+                    CardImage(
+                        backgroundRes = R.drawable.cardgoal,
+                        title = "SET \nYOUR GOAL",
+                        titleColor = Color.White,
+                        onClick = { navController.navigate(Screens.MakeSchedule.route)}
+                    )
                 }
             }
         }
@@ -218,13 +185,3 @@ fun StreakBar(streak: Int) {
         }
     }
 }
-
-//@Composable
-//@Preview
-//fun Preview(){
-//    Home(
-//        navController = rememberNavController(),
-//        userViewModel = TODO(),
-//        viewModel = TODO()
-//    )
-//}
