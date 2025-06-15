@@ -2,7 +2,6 @@ package com.example.peakform.screens.profile
 
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -249,7 +248,7 @@ fun Profile(
                     exerciseImageUrl = exerciseImageUrl
                 )
             } else {
-                Text("Loading statistics...", modifier = Modifier.padding(8.dp))
+                Text("No workout data yet \uD83C\uDFC3", modifier = Modifier.padding(8.dp))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
