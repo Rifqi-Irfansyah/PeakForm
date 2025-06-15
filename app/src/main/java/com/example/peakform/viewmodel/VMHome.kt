@@ -21,10 +21,6 @@ class VMHome : ViewModel(){
         fetchSchedule()
     }
 
-    init {
-        fetchSchedule()
-    }
-
     private fun fetchSchedule() {
         val id = _idUser.value
         if (id == null) {

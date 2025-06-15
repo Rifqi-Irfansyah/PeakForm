@@ -32,7 +32,6 @@ import com.example.peakform.viewmodel.VMHome
 import com.example.peakform.ui.components.CardImage
 import com.example.peakform.ui.theme.NavigationBarMediumTheme
 import com.example.peakform.viewmodel.VMUser
-import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -71,7 +70,7 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Icon(
-                        painter = painterResource(id = R.drawable.trophy), // ganti dengan icon trophy kamu
+                        painter = painterResource(id = R.drawable.trophy),
                         contentDescription = "Trophy",
                         modifier = Modifier
                             .size(24.dp)
@@ -92,7 +91,7 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                     modifier = Modifier
                         .fillMaxWidth()
                 ){
-                    
+
                 }
                 StreakBar(streak = user?.streak ?: 0)
 
@@ -151,7 +150,7 @@ fun StreakBar(streak: Int) {
                 modifier = Modifier
                     .weight(1f)
                     .height(28.dp)
-                    .clip(RoundedCornerShape(topStart = 14.dp, bottomStart = 14.dp))
+                    .clip(RoundedCornerShape(14.dp))
                     .background(MaterialTheme.colorScheme.background)
                     .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(14.dp))
             ) {

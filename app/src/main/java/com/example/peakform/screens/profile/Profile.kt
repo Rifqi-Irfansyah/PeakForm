@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
@@ -49,9 +48,8 @@ fun Profile(
     userViewModel: VMUser = viewModel()
 ) {
     val loading by profileViewModel.loading.collectAsState()
-    val logs by profileViewModel.logs.collectAsState()
     val photoUrl by profileViewModel.photoUrl.collectAsState()
-    val user = userViewModel.user
+    var user = userViewModel.user
     val coroutineScope = rememberCoroutineScope()
     val prefManager = PrefManager(navController.context)
     val context = LocalContext.current
@@ -59,6 +57,10 @@ fun Profile(
         user?.id?.let { userId ->
             profileViewModel.getUserPhoto(userId) { _, _ -> }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        user = userViewModel.fetchUser(user?.id ?: "")
     }
 
     var showUploadPopup by remember { mutableStateOf(false) }
@@ -187,40 +189,38 @@ fun Profile(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            user?.let {
-                Text(
-                    text = it.name,
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 20.sp
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = it.email,
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 20.sp
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = "Points: ${it.point}",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 20.sp
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = "Streak: ${it.streak}",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 20.sp
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
+            Text(
+                text = user?.name ?: "",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 20.sp
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = user?.email ?: "",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 20.sp
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = "Points: ${user?.point}",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 20.sp
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = "Streak: ${user?.streak}",
+                style = TextStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 20.sp
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -251,65 +251,6 @@ fun Profile(
                     text = "Logout",
                     color = MaterialTheme.colorScheme.onPrimary
                 )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (logs.isNotEmpty()) {
-                Text(
-                    text = "Exercise Logs:",
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                logs.forEach { log ->
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        shadowElevation = 4.dp,
-                        color = MaterialTheme.colorScheme.surface
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Exercise: ${log.exercise.name}",
-                                    style = TextStyle(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontSize = 16.sp
-                                    )
-                                )
-                                Text(
-                                    text = "Set: ${log.set}",
-                                    style = TextStyle(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontSize = 16.sp
-                                    )
-                                )
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Reps: ${log.repetition}",
-                                    style = TextStyle(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontSize = 16.sp
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
             }
         }
     }

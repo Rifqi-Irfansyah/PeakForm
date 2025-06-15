@@ -1,4 +1,5 @@
 package com.example.peakform.api
+import com.example.peakform.data.model.ApiResponse
 import com.example.peakform.data.model.StreakResponse
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import retrofit2.Response
@@ -17,7 +18,7 @@ interface StreakService {
     @GET("/streak/check/{userId}")
     suspend fun checkStreak(
         @Path("userId") userId: String,
-    ): Response<StreakResponse>
+    ): Response<ApiResponse<Int>>
 
     companion object {
         val instance: StreakService by lazy {
