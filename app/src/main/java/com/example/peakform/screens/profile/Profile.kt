@@ -211,7 +211,7 @@ fun Profile(
             PointStreakInfo(
                 points = user?.point ?: 0,
                 streak = user?.streak ?: 0,
-                rank = 2,
+                rank = user?.rank ?: 0,
             )
 
             SetRepInfo(

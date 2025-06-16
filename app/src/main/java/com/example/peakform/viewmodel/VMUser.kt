@@ -35,6 +35,7 @@ class VMUser : ViewModel() {
                 val response = UserService.instance.getUser(userid)
                 if (response.isSuccessful) {
                     user = response.body()?.data?.copy(id = user?.id ?: "")
+                    Log.d("VMUser", "User fetched successfully: ${user?.name}")
                 } else {
                     return@launch
                 }

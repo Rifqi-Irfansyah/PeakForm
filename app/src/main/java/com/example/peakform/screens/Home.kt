@@ -116,7 +116,7 @@ fun Home(navController: NavController, userViewModel: VMUser, viewModel: VMHome 
                     )
                 }
 
-                PointStreakInfo(streak = user?.streak ?: 0, points = user?.point ?: 0, rank = 2)
+                PointStreakInfo(streak = user?.streak ?: 0, points = user?.point ?: 0, rank = user?.rank ?: 0)
 
                 if (schedule) {
                     CardImage(

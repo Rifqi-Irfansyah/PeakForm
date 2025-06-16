@@ -10,4 +10,5 @@ data class User(
     val token: String,
     val point: Int,
     val streak: Int,
+    val rank: Int,
 )
