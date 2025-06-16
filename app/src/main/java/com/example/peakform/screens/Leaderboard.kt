@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.peakform.api.PhotoProfileService
 import com.example.peakform.data.model.UserLeaderboard
+import com.example.peakform.ui.components.formatNumber
 import com.example.peakform.viewmodel.VMLeaderboard
 
 
@@ -214,7 +215,7 @@ fun LeaderboardCard(user: UserLeaderboard, position: Int) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${user.point} Points",
+                    text =  formatNumber(user.point) + " Points",
                     style = TextStyle(
                         color = if (position <= 3) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.secondary,
                         fontSize = pointsFontSize,

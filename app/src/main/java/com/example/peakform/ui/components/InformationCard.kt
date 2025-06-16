@@ -101,10 +101,10 @@ fun PointStreakInfo(streak: Int, points: Int, rank: Int) {
                             fontSize = 16.sp
                         )
                         Text(
-                            text = formatNumber(points),
+                            text = formatNumberDot(points),
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 20.sp
+                            fontSize = 16.sp
                         )
                     }
                 }
@@ -306,4 +306,9 @@ fun formatNumber(points: Int): String {
         points >= 1000 -> "${(points / 1000.0).toInt()}K"
         else -> points.toString()
     }
+}
+
+@Composable
+fun formatNumberDot(points: Int): String {
+    return "%,d".format(points).replace(',', '.')
 }
