@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,10 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 
 @Composable
 fun PointStreakInfo(streak: Int, points: Int, rank: Int) {
@@ -143,46 +148,68 @@ fun PointStreakInfo(streak: Int, points: Int, rank: Int) {
 
 @Composable
 fun FrequentExerciseCard(exerciseName: String, exerciseImageUrl: String) {
+    val context = LocalContext.current
+    val imageLoader = ImageLoader.Builder(context)
+        .components {
+            add(SvgDecoder.Factory())
+        }
+        .build()
+
+    val backgroundColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(150.dp)
             .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Your Best Exercise",
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                Text(
+                    text = "Your Best Exercise",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
 
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f))
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(8.dp)
             ) {
                 AsyncImage(
-                    model = exerciseImageUrl,
+                    model = ImageRequest.Builder(context)
+                        .data(exerciseImageUrl)
+                        .decoderFactory(SvgDecoder.Factory())
+                        .build(),
+                    imageLoader = imageLoader,
                     contentDescription = "Exercise Image",
                     modifier = Modifier
                         .size(64.dp)
+                        .align(Alignment.CenterStart)
+                        .offset(x = 16.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
-
-                Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
                     text = exerciseName,
                     color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
         }

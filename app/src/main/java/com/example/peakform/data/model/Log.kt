@@ -36,6 +36,8 @@ data class LeaderboardResponse(
 )
 
 data class UserLeaderboard(
+    @SerializedName("photo")
+    val photo: String,
     @SerializedName("name")
     val name: String,
     @SerializedName("point")
